@@ -1,0 +1,31 @@
+name: ContinuityOS Merge Guard
+description: Govern AI-generated pull requests before they merge.
+author: ContinuityOS
+
+inputs:
+  body:
+    description: Pull request body or governance text to evaluate. Defaults to the current pull request body when available.
+    required: false
+    default: ''
+
+outputs:
+  verdict:
+    description: "Merge eligibility verdict: VALID or NULL."
+    value: ${{ steps.merge-guard.outputs.verdict }}
+  proof:
+    description: Verifiable evidence extracted for the verdict.
+    value: ${{ steps.merge-guard.outputs.proof }}
+
+runs:
+  using: composite
+  steps:
+    - id: merge-guard
+      shell: bash
+      env:
+        INPUT_BODY: ${{ inputs.body }}
+        GITHUB_EVENT_PATH: ${{ github.event_path }}
+      run: "$GITHUB_ACTION_PATH/src/merge-guard.sh"
+
+branding:
+  icon: shield
+  color: blue

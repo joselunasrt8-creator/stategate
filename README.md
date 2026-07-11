@@ -259,7 +259,7 @@ ContinuityOS Merge Guard is available through the GitHub Marketplace.
 Current release channels:
 
 - `v1` — moving major-version tag for the latest compatible v1 release
-- `v1.0.0` — immutable exact-version release
+- `v1.0.0` — exact-version tag intended to remain immutable under the repository release policy
 - commit SHA — immutable source pin for maximum reproducibility
 
 Recommended installation:
@@ -275,4 +275,4 @@ uses: joselunasrt8-creator/continuity-merge-guard@v1.0.0
 uses: joselunasrt8-creator/continuity-merge-guard@<full-commit-sha>
 ```
 
-The moving `v1` tag may advance to newer backward-compatible v1 releases. Exact semantic-version tags and commit SHAs should be treated as immutable.
+The moving `v1` tag may advance to newer backward-compatible v1 releases. Exact semantic-version tags are intended to remain immutable under the repository release policy, and commit SHAs should be treated as immutable source pins.

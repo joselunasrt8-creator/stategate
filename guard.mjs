@@ -3,6 +3,7 @@
 // CLI, and GitHub Action) must enter through validateMergeGuard() so the
 // validated object, proof object, and emitted decision share one canonical flow.
 
+import { readFileSync } from 'node:fs'
 import { canonicalize, sha256Hex, diffHash } from './canonical.mjs'
 import { classifyAttribution } from './attribution.mjs'
 
@@ -14,6 +15,37 @@ export const RECORD_TYPE = 'MERGE_GUARD_PROOF'
 
 export const REVIEW_STATES = ['APPROVED', 'CHANGES_REQUESTED', 'DISMISSED', 'COMMENTED', 'PENDING']
 export const REVIEW_STATUS_DISABLED = 'not_required'
+
+const DEVELOPMENT_VALIDATOR = {
+  validator_name: 'continuity-merge-guard',
+  validator_version: 'development',
+  validator_commit: process.env.MERGE_GUARD_BUILD_COMMIT || 'unknown',
+  validator_release_hash: null,
+  canonical_algorithm_version: 'merge-guard-v1',
+  proof_schema_version: '1.0.0',
+  compatibility_range: '>=1.0.0 <2.0.0',
+}
+
+function readJsonFile(path) {
+  try { return JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8')) } catch { return null }
+}
+
+export function validatorIdentity() {
+  const metadata = readJsonFile('./release/validator-metadata.json')
+  if (!metadata) return { ...DEVELOPMENT_VALIDATOR }
+  const manifest = readJsonFile('./release/RELEASE_MANIFEST.json')
+  const version = metadata.validator_version || 'development'
+  const published = version !== 'development'
+  return {
+    validator_name: metadata.validator_name || DEVELOPMENT_VALIDATOR.validator_name,
+    validator_version: version,
+    validator_commit: published ? (manifest?.source_commit || 'unknown') : (process.env.MERGE_GUARD_BUILD_COMMIT || manifest?.source_commit || 'unknown'),
+    validator_release_hash: published ? (manifest?.release_hash || null) : null,
+    canonical_algorithm_version: metadata.canonical_algorithm_version || DEVELOPMENT_VALIDATOR.canonical_algorithm_version,
+    proof_schema_version: metadata.proof_schema_version || DEVELOPMENT_VALIDATOR.proof_schema_version,
+    compatibility_range: metadata.compatibility_range || DEVELOPMENT_VALIDATOR.compatibility_range,
+  }
+}
 
 function normalizeMinimumApprovals(v) {
   if (v === undefined || v === null || v === '') return 1
@@ -253,6 +285,7 @@ export function proofFromDecision(decision) {
   return {
     proof_id: decision.proof_id,
     repo: decision.repo,
+    validator: validatorIdentity(),
     canonical_payload: decision.canonical_payload,
     canonical_hash: decision.canonical_hash,
     diff_hash: decision.diff_hash,

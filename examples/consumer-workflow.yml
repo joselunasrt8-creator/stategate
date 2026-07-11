@@ -1,0 +1,58 @@
+name: Merge Guard Consumer Verification
+
+on:
+  workflow_dispatch:
+
+jobs:
+  exact-pin-valid:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run exact pin VALID case
+        id: guard
+        uses: joselunasrt8-creator/continuity-merge-guard@v1.0.0
+        with:
+          repo: owner/repo
+          pr_number: '1'
+          head_sha: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          base_sha: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+          actor: human-user
+          pr_diff: |
+            diff --git a/README.md b/README.md
+            index 1111111..2222222 100644
+            --- a/README.md
+            +++ b/README.md
+            @@ -1 +1 @@
+            -old
+            +new
+      - uses: actions/upload-artifact@v4
+        with:
+          name: exact-pin-valid-proof
+          path: MERGE_GUARD_PROOF.json
+
+  major-pin-null:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run major pin NULL case
+        id: guard
+        continue-on-error: true
+        uses: joselunasrt8-creator/continuity-merge-guard@v1
+        with:
+          repo: owner/repo
+          pr_number: '2'
+          head_sha: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          base_sha: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+          actor: human-user
+          pr_diff: ''
+      - uses: actions/upload-artifact@v4
+        with:
+          name: major-pin-null-proof
+          path: MERGE_GUARD_PROOF.json
+      - name: Document outputs
+        run: |
+          echo "result=${{ steps.guard.outputs.result }}"
+          echo "proof_id=${{ steps.guard.outputs.proof_id }}"
+          echo "proof_hash=${{ steps.guard.outputs.proof_hash }}"
+          echo "diff_hash=${{ steps.guard.outputs.diff_hash }}"
+          echo "null_reasons=${{ steps.guard.outputs.null_reasons }}"

@@ -28,7 +28,7 @@ export function boolInput(v) {
   return v === true || normalizeString(v).toLowerCase() === 'true'
 }
 
-function canonicalPayload(input, diff_hash, diff_source, author_kind, require_agent_authored) {
+function canonicalPayload(input, diff_hash, diff_source, author_kind, require_agent_authored, attribution) {
   const payload = REQUIRED_FIELDS.reduce((o, f) => {
     o[f] = input[f] ?? null
     return o
@@ -37,6 +37,9 @@ function canonicalPayload(input, diff_hash, diff_source, author_kind, require_ag
   payload.diff_source = diff_source
   payload.author_kind = author_kind
   payload.require_agent_authored = require_agent_authored
+  payload.attribution_status = attribution.attribution_status
+  payload.attribution_classification = attribution.attribution_classification
+  payload.attribution_evidence_hash = attribution.attribution_evidence_hash
   return payload
 }
 
@@ -91,7 +94,7 @@ export function validateMergeGuard(input = {}) {
   })
   if (attribution.attribution_status === 'identity_ambiguous') null_reasons.push('ATTRIBUTION_AMBIGUOUS')
 
-  const canonical_payload = canonicalPayload(input, diff.diff_hash, diff_source, author_kind, require_agent_authored)
+  const canonical_payload = canonicalPayload(input, diff.diff_hash, diff_source, author_kind, require_agent_authored, attribution)
   const canonical_hash = sha256Hex(canonicalize(canonical_payload))
   const expected_proof_hash = normalizeString(input.expected_proof_hash)
   if (expected_proof_hash && expected_proof_hash !== canonical_hash) null_reasons.push('PROOF_HASH_MISMATCH')

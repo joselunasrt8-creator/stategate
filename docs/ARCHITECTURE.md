@@ -14,7 +14,7 @@ validateMergeGuard(input)
         ├─ explicit author-policy validation
         ├─ evaluated head/base SHA continuity checks
         ├─ canonical PR diff normalization and diff hash binding
-        ├─ attribution classification
+        ├─ attribution classification and evidence hash binding
         ├─ replay/proof hash comparison
         └─ canonical payload hash
         ↓
@@ -58,15 +58,18 @@ sequenceDiagram
 | Test harness | `node test.mjs` | fixtures and regression cases call `evaluate`, which is a compatibility alias for `validateMergeGuard()` | Compatibility alias is tested against direct canonical entry. |
 | Library import | `import { validateMergeGuard } from './check.mjs'` or `./guard.mjs` | both exports reference the same function | Legacy `evaluate` remains an alias, not a second implementation. |
 
+The mutation-capable repository-local surfaces are the GitHub Action and CLI paths because they can emit proof artifacts, GitHub outputs, and process status. The test harness and library import are validation entrypoints, not independent mutation-capable execution surfaces.
+
 ## Preserved invariants
 
 - `validated_object == emitted_proof_object` for the canonical fields written into `MERGE_GUARD_PROOF.json`.
-- The decision hash binds required identity fields, normalized author policy, diff provenance, and canonical diff hash.
+- The decision hash binds required identity fields, normalized author policy, diff provenance, canonical diff hash, and normalized attribution status/classification/evidence hash.
 - Missing, malformed, or unavailable diffs fail closed to `NULL`.
 - Evaluated GitHub head/base SHAs must match the requested input SHAs.
 - Optional expected diff/proof/validated-object hashes are replay guards; mismatches fail closed.
-- Attribution metadata can reject ambiguity but does not create hidden merge authority.
+- Diff provenance is deliberately part of canonical object identity: the same textual diff has the same `diff_hash`, but a different `diff_source` produces a different proof hash.
+- Attribution classification is decision-critical evidence and is bound by status, classification, and evidence hash; it can reject ambiguity but does not create hidden merge authority.
 
 ## Determinism boundary
 
-Deterministic behavior is limited to the canonical validation object and canonical diff text. Network acquisition is intentionally outside the deterministic boundary; once acquired, the evaluated SHAs and diff bytes are passed into the canonical flow and bound into the result.
+Deterministic behavior is limited to the canonical validation object and canonical diff text. Network acquisition is intentionally outside the deterministic boundary; once acquired, the evaluated SHAs, diff bytes, diff provenance, and attribution evidence are passed into the canonical flow and bound into the result.

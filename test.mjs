@@ -149,6 +149,13 @@ const canonicalEntry = validateMergeGuard(baseInput)
 const compatibilityEntry = evaluate(baseInput)
 assertCase('canonical-entrypoint-compatibility', canonicalEntry.canonical_hash === compatibilityEntry.canonical_hash && canonicalEntry.result === compatibilityEntry.result, 'legacy evaluate export delegates to canonical validateMergeGuard path')
 
+
+const differentSource = validateMergeGuard({ ...baseInput, diff_source: 'alternate_provenance' })
+assertCase('canonical-diff-source-bound-to-proof', differentSource.diff_hash === canonicalEntry.diff_hash && differentSource.canonical_hash !== canonicalEntry.canonical_hash, 'same diff text with different provenance keeps diff hash but changes proof hash')
+
+const humanAttribution = validateMergeGuard({ ...baseInput, pr_labels: 'human-authored' })
+assertCase('canonical-attribution-bound-to-proof', humanAttribution.result === 'VALID' && humanAttribution.canonical_hash !== canonicalEntry.canonical_hash && humanAttribution.attribution_evidence_hash !== canonicalEntry.attribution_evidence_hash, 'attribution evidence changes canonical proof identity')
+
 const proof = proofFromDecision(canonicalEntry)
 assertCase('canonical-proof-object-exactness', proof.canonical_hash === canonicalEntry.canonical_hash && proof.record_type === 'MERGE_GUARD_PROOF' && !('github_token' in proof), 'proof object is derived from canonical decision without runtime-only inputs')
 

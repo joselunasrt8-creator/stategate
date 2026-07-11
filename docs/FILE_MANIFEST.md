@@ -53,4 +53,5 @@
 
 - Duplicate Merge Guard decision logic was consolidated into `guard.mjs`; `evaluate` remains only as a compatibility alias.
 - The proof object is projected by `proofFromDecision()` so proof emission cannot diverge from validation output.
+- Diff provenance and attribution evidence semantics are now explicitly bound and documented: `diff_source` affects proof identity, and attribution status/classification/evidence hash are included in the canonical payload.
 - No obsolete shell runtime, package manager artifacts, or compiled distribution files are present in this standalone action package.

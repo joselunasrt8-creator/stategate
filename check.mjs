@@ -4,10 +4,10 @@
 // Self-contained: no external npm dependencies.
 
 import { writeFileSync, appendFileSync } from 'node:fs'
-import { canonicalize, sha256Hex } from './canonical.mjs'
+import { canonicalize, sha256Hex, diffHash } from './canonical.mjs'
 import { classifyAttribution } from './attribution.mjs'
 
-export { canonicalize, sha256Hex }
+export { canonicalize, sha256Hex, diffHash }
 
 const REQUIRED_FIELDS = ['repo', 'pr_number', 'head_sha', 'base_sha', 'actor']
 const AUTHOR_KINDS = ['agent', 'human', 'unknown']
@@ -25,6 +25,22 @@ function normalizeRequireAgentAuthored(v) {
   return normalizeString(v).toLowerCase() || 'false'
 }
 
+function boolInput(v) {
+  return v === true || normalizeString(v).toLowerCase() === 'true'
+}
+
+function buildCanonicalPayload(input, diff_hash, diff_source, author_kind, require_agent_authored) {
+  const canonical_payload = REQUIRED_FIELDS.reduce((o, f) => {
+    o[f] = input[f] ?? null
+    return o
+  }, {})
+  canonical_payload.diff_hash = diff_hash
+  canonical_payload.diff_source = diff_source
+  canonical_payload.author_kind = author_kind
+  canonical_payload.require_agent_authored = require_agent_authored
+  return canonical_payload
+}
+
 export function evaluate(input) {
   const missing_fields = REQUIRED_FIELDS.filter(f => {
     const v = input[f]
@@ -39,6 +55,27 @@ export function evaluate(input) {
   const null_reasons = []
   if (missing_fields.length > 0) null_reasons.push('MISSING_REQUIRED_FIELD')
   if (invalid_fields.length > 0) null_reasons.push('INVALID_POLICY_FIELD')
+
+  if (boolInput(input.diff_acquisition_failed)) {
+    null_reasons.push('DIFF_ACQUISITION_FAILED')
+  }
+  const evaluated_head_sha = normalizeString(input.evaluated_head_sha || input.head_sha)
+  if (normalizeString(input.head_sha) && evaluated_head_sha && normalizeString(input.head_sha) !== evaluated_head_sha) {
+    null_reasons.push('HEAD_SHA_MISMATCH')
+  }
+  const evaluated_base_sha = normalizeString(input.evaluated_base_sha || input.base_sha)
+  if (normalizeString(input.base_sha) && evaluated_base_sha && normalizeString(input.base_sha) !== evaluated_base_sha) {
+    null_reasons.push('BASE_SHA_MISMATCH')
+  }
+
+  const diff = diffHash(input.pr_diff)
+  if (!diff.ok) null_reasons.push(diff.reason)
+
+  const diff_source = normalizeString(input.diff_source) || 'github_pull_request_diff'
+  const expected_diff_hash = normalizeString(input.expected_diff_hash)
+  if (expected_diff_hash && diff.diff_hash && expected_diff_hash !== diff.diff_hash) {
+    null_reasons.push('DIFF_HASH_MISMATCH')
+  }
 
   const agent_author_required = require_agent_authored === 'true'
   if (agent_author_required && author_kind !== 'agent') {
@@ -58,13 +95,16 @@ export function evaluate(input) {
     null_reasons.push('ATTRIBUTION_AMBIGUOUS')
   }
 
-  const canonical_payload = REQUIRED_FIELDS.reduce((o, f) => {
-    o[f] = input[f] ?? null
-    return o
-  }, {})
-  canonical_payload.author_kind = author_kind
-  canonical_payload.require_agent_authored = require_agent_authored
+  const canonical_payload = buildCanonicalPayload(input, diff.diff_hash, diff_source, author_kind, require_agent_authored)
   const canonical_hash = sha256Hex(canonicalize(canonical_payload))
+  const expected_proof_hash = normalizeString(input.expected_proof_hash)
+  if (expected_proof_hash && expected_proof_hash !== canonical_hash) {
+    null_reasons.push('PROOF_HASH_MISMATCH')
+  }
+  const expected_validated_object_hash = normalizeString(input.expected_validated_object_hash)
+  if (expected_validated_object_hash && expected_validated_object_hash !== canonical_hash) {
+    null_reasons.push('VALIDATED_OBJECT_MUTATION')
+  }
   const result = null_reasons.length === 0 ? 'VALID' : 'NULL'
   const head_sha = input.head_sha ?? ''
   const proof_id = `MERGE_GUARD-${input.pr_number ?? 'unknown'}-${head_sha.slice(0, 8) || 'unknown'}`
@@ -74,6 +114,9 @@ export function evaluate(input) {
     repo: input.repo ?? null,
     canonical_payload,
     canonical_hash,
+    diff_hash: diff.diff_hash,
+    diff_source,
+    diff_canonicalization: 'line_endings_lf_terminal_lf_preserve_order_and_patch_text',
     result,
     missing_fields,
     invalid_fields,
@@ -89,7 +132,49 @@ export function evaluate(input) {
   }
 }
 
-function main() {
+export async function acquirePullRequestDiff(input) {
+  const repo = normalizeString(input.repo)
+  const pr_number = normalizeString(input.pr_number)
+  const token = normalizeString(input.github_token)
+  const apiUrl = normalizeString(input.github_api_url) || 'https://api.github.com'
+  if (!repo || !pr_number || !token) {
+    return { ok: false, reason: 'DIFF_ACQUISITION_FAILED', pr_diff: '', evaluated_head_sha: '' }
+  }
+  const prUrl = `${apiUrl.replace(/\/$/, '')}/repos/${repo}/pulls/${pr_number}`
+  const headers = {
+    accept: 'application/vnd.github+json',
+    authorization: `Bearer ${token}`,
+    'user-agent': 'continuity-merge-guard',
+    'x-github-api-version': '2022-11-28',
+  }
+  try {
+    const prRes = await fetch(prUrl, { headers })
+    if (!prRes.ok) return { ok: false, reason: 'DIFF_ACQUISITION_FAILED', pr_diff: '', evaluated_head_sha: '' }
+    const pr = await prRes.json()
+    const evaluated_head_sha = normalizeString(pr?.head?.sha)
+    const evaluated_base_sha = normalizeString(pr?.base?.sha)
+    if (!evaluated_head_sha || evaluated_head_sha !== normalizeString(input.head_sha)) {
+      return { ok: false, reason: 'HEAD_SHA_MISMATCH', pr_diff: '', evaluated_head_sha, evaluated_base_sha }
+    }
+    if (evaluated_base_sha && evaluated_base_sha !== normalizeString(input.base_sha)) {
+      return { ok: false, reason: 'BASE_SHA_MISMATCH', pr_diff: '', evaluated_head_sha, evaluated_base_sha }
+    }
+    const diffRes = await fetch(prUrl, { headers: { ...headers, accept: 'application/vnd.github.diff' } })
+    if (!diffRes.ok) return { ok: false, reason: 'DIFF_ACQUISITION_FAILED', pr_diff: '', evaluated_head_sha, evaluated_base_sha }
+    return {
+      ok: true,
+      reason: null,
+      pr_diff: await diffRes.text(),
+      diff_source: 'github_pull_request_diff_api',
+      evaluated_head_sha,
+      evaluated_base_sha,
+    }
+  } catch {
+    return { ok: false, reason: 'DIFF_ACQUISITION_FAILED', pr_diff: '', evaluated_head_sha: '' }
+  }
+}
+
+async function main() {
   const input = {
     repo: process.env.MERGE_GUARD_REPO || '',
     pr_number: process.env.MERGE_GUARD_PR_NUMBER || '',
@@ -104,14 +189,28 @@ function main() {
     pr_labels: process.env.MERGE_GUARD_PR_LABELS || '',
     commit_trailers: process.env.MERGE_GUARD_COMMIT_TRAILERS || '',
     operator_id: process.env.MERGE_GUARD_OPERATOR_ID || '',
+    pr_diff: process.env.MERGE_GUARD_PR_DIFF || '',
+    diff_source: process.env.MERGE_GUARD_DIFF_SOURCE || '',
+    github_token: process.env.MERGE_GUARD_GITHUB_TOKEN || '',
+    github_api_url: process.env.GITHUB_API_URL || '',
+  }
+  if (!input.pr_diff) {
+    const acquired = await acquirePullRequestDiff(input)
+    input.pr_diff = acquired.pr_diff
+    input.diff_source = acquired.diff_source || 'github_pull_request_diff_api'
+    input.evaluated_head_sha = acquired.evaluated_head_sha
+    input.diff_acquisition_failed = !acquired.ok
+    input.evaluated_base_sha = acquired.evaluated_base_sha
   }
   const decision = evaluate(input)
-  const generated_at = new Date().toISOString()
   const proof = {
     proof_id: decision.proof_id,
     repo: decision.repo,
     canonical_payload: decision.canonical_payload,
     canonical_hash: decision.canonical_hash,
+    diff_hash: decision.diff_hash,
+    diff_source: decision.diff_source,
+    diff_canonicalization: decision.diff_canonicalization,
     result: decision.result,
     missing_fields: decision.missing_fields,
     invalid_fields: decision.invalid_fields,
@@ -123,7 +222,6 @@ function main() {
     attribution_classification: decision.attribution_classification,
     attribution_status: decision.attribution_status,
     attribution_evidence_hash: decision.attribution_evidence_hash,
-    generated_at,
     record_type: decision.record_type,
   }
   const proofPath = 'MERGE_GUARD_PROOF.json'
@@ -132,6 +230,8 @@ function main() {
   console.log(`ContinuityOS Merge Guard — result=${decision.result}`)
   console.log(`proof_id=${decision.proof_id}`)
   console.log(`canonical_hash=${decision.canonical_hash}`)
+  console.log(`diff_hash=${decision.diff_hash || 'null'}`)
+  console.log(`diff_source=${decision.diff_source}`)
   console.log(`author_kind=${decision.author_kind}`)
   console.log(`require_agent_authored=${decision.require_agent_authored}`)
   console.log(`attribution_status=${decision.attribution_status}`)
@@ -146,6 +246,7 @@ function main() {
     appendFileSync(githubOutput, `result=${decision.result}\n`)
     appendFileSync(githubOutput, `proof_id=${decision.proof_id}\n`)
     appendFileSync(githubOutput, `proof_hash=${decision.canonical_hash}\n`)
+    appendFileSync(githubOutput, `diff_hash=${decision.diff_hash || ''}\n`)
     appendFileSync(githubOutput, `proof_url=${proofPath}\n`)
     appendFileSync(githubOutput, `author_kind=${decision.author_kind}\n`)
     appendFileSync(githubOutput, `null_reasons=${decision.null_reasons.join(',')}\n`)
@@ -163,6 +264,7 @@ function main() {
       `result: \`${decision.result}\``,
       `proof_id: \`${decision.proof_id}\``,
       `proof_hash: \`${decision.canonical_hash}\``,
+      `diff_hash: \`${decision.diff_hash || 'null'}\``,
       `author_kind: \`${decision.author_kind}\``,
       `require_agent_authored: \`${decision.require_agent_authored}\``,
       `attribution_status: \`${decision.attribution_status}\``,
@@ -185,4 +287,7 @@ function main() {
 }
 
 const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`
-if (isMain) main()
+if (isMain) main().catch(err => {
+  console.error(err)
+  process.exitCode = 1
+})

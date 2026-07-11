@@ -13,6 +13,22 @@ const fixturesDir = join(dir, 'fixtures')
 let passCount = 0
 let failCount = 0
 
+const DEFAULT_DIFF = [
+  'diff --git a/README.md b/README.md',
+  'index 1111111..2222222 100644',
+  '--- a/README.md',
+  '+++ b/README.md',
+  '@@ -1 +1 @@',
+  '-old',
+  '+new',
+  '',
+].join('\n')
+
+function withDefaultDiff(input) {
+  if ('pr_diff' in input || input.diff_acquisition_failed) return input
+  return { ...input, pr_diff: DEFAULT_DIFF, diff_source: 'test_fixture_pull_request_diff' }
+}
+
 function recordPass(name, message) {
   passCount++
   console.log(` ${name} PASS — ${message}`)
@@ -27,7 +43,7 @@ console.log('=== ContinuityOS Merge Guard — conformance test ===\n')
 for (const file of readdirSync(fixturesDir).sort()) {
   if (!file.endsWith('.json')) continue
   const fixture = JSON.parse(readFileSync(join(fixturesDir, file), 'utf8'))
-  const decision = evaluate(fixture.input)
+  const decision = evaluate(withDefaultDiff(fixture.input))
 
   if (decision.result !== fixture.expected_result) {
     recordFail(file, `expected result ${fixture.expected_result}, got ${decision.result}`)
@@ -78,7 +94,7 @@ for (const file of readdirSync(fixturesDir).sort()) {
     continue
   }
   if (fixture.check_type === 'deterministic_hash') {
-    const decisionAgain = evaluate(fixture.input)
+    const decisionAgain = evaluate(withDefaultDiff(fixture.input))
     if (decision.canonical_hash !== decisionAgain.canonical_hash) {
       recordFail(file, `canonical_hash not deterministic: ${decision.canonical_hash} vs ${decisionAgain.canonical_hash}`)
       continue
@@ -88,6 +104,83 @@ for (const file of readdirSync(fixturesDir).sort()) {
   }
   recordPass(file, fixture.description)
 }
+
+function assertCase(name, condition, message) {
+  if (condition) recordPass(name, message)
+  else recordFail(name, message)
+}
+
+console.log('\n=== Canonical PR diff binding tests ===\n')
+
+const baseInput = {
+  repo: 'owner/repo',
+  pr_number: '32',
+  head_sha: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  base_sha: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+  actor: 'some-contributor',
+  pr_diff: DEFAULT_DIFF,
+  diff_source: 'test_fixture_pull_request_diff',
+}
+const changedLineDiff = DEFAULT_DIFF.replace('+new', '+newer')
+const addedFileDiff = [
+  'diff --git a/new.txt b/new.txt',
+  'new file mode 100644',
+  'index 0000000..3333333',
+  '--- /dev/null',
+  '+++ b/new.txt',
+  '@@ -0,0 +1 @@',
+  '+hello',
+  '',
+].join('\n')
+const deletedFileDiff = [
+  'diff --git a/old.txt b/old.txt',
+  'deleted file mode 100644',
+  'index 4444444..0000000',
+  '--- a/old.txt',
+  '+++ /dev/null',
+  '@@ -1 +0,0 @@',
+  '-goodbye',
+  '',
+].join('\n')
+
+const sameA = evaluate(baseInput)
+const sameB = evaluate({ ...baseInput })
+assertCase('diff-binding-same-pr-same-diff', sameA.diff_hash === sameB.diff_hash && sameA.canonical_hash === sameB.canonical_hash, 'same identity and diff produce same hashes')
+
+const lf = evaluate(baseInput)
+const crlf = evaluate({ ...baseInput, pr_diff: DEFAULT_DIFF.replace(/\n/g, '\r\n') })
+assertCase('diff-binding-line-endings', lf.diff_hash === crlf.diff_hash, 'CRLF and LF normalize to same diff hash')
+
+const changed = evaluate({ ...baseInput, pr_diff: changedLineDiff })
+assertCase('diff-binding-changed-source-line', sameA.diff_hash !== changed.diff_hash, 'changed source line changes diff hash')
+
+const added = evaluate({ ...baseInput, pr_diff: addedFileDiff })
+assertCase('diff-binding-added-file', sameA.diff_hash !== added.diff_hash, 'added file changes diff hash')
+
+const deleted = evaluate({ ...baseInput, pr_diff: deletedFileDiff })
+assertCase('diff-binding-deleted-file', sameA.diff_hash !== deleted.diff_hash, 'deleted file changes diff hash')
+
+const changedHead = evaluate({ ...baseInput, head_sha: 'cccccccccccccccccccccccccccccccccccccccc' })
+assertCase('diff-binding-changed-head-sha', sameA.canonical_hash !== changedHead.canonical_hash && sameA.proof_id !== changedHead.proof_id, 'changed head SHA changes proof identity')
+
+const missingDiff = evaluate({ ...baseInput, pr_diff: '' })
+assertCase('diff-binding-missing-diff', missingDiff.result === 'NULL' && missingDiff.null_reasons.includes('DIFF_MISSING'), 'missing diff returns NULL')
+
+const malformedDiff = evaluate({ ...baseInput, pr_diff: 'not a unified git diff\n' })
+assertCase('diff-binding-malformed-diff', malformedDiff.result === 'NULL' && malformedDiff.null_reasons.includes('DIFF_MALFORMED'), 'malformed diff returns NULL')
+
+const acquisitionFailure = evaluate({ ...baseInput, pr_diff: '', diff_acquisition_failed: true })
+assertCase('diff-binding-acquisition-failure', acquisitionFailure.result === 'NULL' && acquisitionFailure.null_reasons.includes('DIFF_ACQUISITION_FAILED'), 'diff acquisition failure returns NULL')
+
+const oldProofOnNewDiff = evaluate({ ...baseInput, pr_diff: changedLineDiff, expected_diff_hash: sameA.diff_hash, expected_proof_hash: sameA.canonical_hash })
+assertCase('diff-binding-old-proof-new-diff', oldProofOnNewDiff.result === 'NULL' && oldProofOnNewDiff.null_reasons.includes('DIFF_HASH_MISMATCH'), 'old proof no longer satisfies current diff')
+
+const postValidationMutation = evaluate({ ...baseInput, actor: 'mutated-actor', expected_validated_object_hash: sameA.canonical_hash })
+assertCase('diff-binding-post-validation-mutation', postValidationMutation.result === 'NULL' && postValidationMutation.null_reasons.includes('VALIDATED_OBJECT_MUTATION'), 'post-validation object mutation returns NULL')
+
+const replayA = evaluate(baseInput)
+const replayB = evaluate(JSON.parse(JSON.stringify(baseInput)))
+assertCase('diff-binding-deterministic-replay', replayA.result === replayB.result && replayA.canonical_hash === replayB.canonical_hash, 'deterministic replay produces identical result and proof hash')
 
 const total = passCount + failCount
 console.log(`\nTotal: ${total} | PASS: ${passCount} | FAIL: ${failCount}`)

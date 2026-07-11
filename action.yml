@@ -49,6 +49,14 @@ inputs:
     description: 'Optional human operator id behind an agent-authored PR'
     required: false
     default: ''
+  pr-diff:
+    description: 'Optional exact PR diff text. When omitted, the action fetches the GitHub pull request diff for the evaluated head SHA.'
+    required: false
+    default: ''
+  github-token:
+    description: 'GitHub token used to fetch the pull request JSON and canonical diff when pr-diff is omitted.'
+    required: false
+    default: ${{ github.token }}
 
 outputs:
   result:
@@ -81,6 +89,9 @@ outputs:
   attribution_evidence_hash:
     description: 'sha256 of the canonicalized attribution evidence array'
     value: ${{ steps.merge-guard.outputs.attribution_evidence_hash }}
+  diff_hash:
+    description: 'sha256 of the canonical pull request diff'
+    value: ${{ steps.merge-guard.outputs.diff_hash }}
 
 runs:
   using: 'composite'
@@ -102,6 +113,8 @@ runs:
         MERGE_GUARD_PR_LABELS: ${{ inputs.pr-labels }}
         MERGE_GUARD_COMMIT_TRAILERS: ${{ inputs.commit-trailers }}
         MERGE_GUARD_OPERATOR_ID: ${{ inputs.operator-id }}
+        MERGE_GUARD_PR_DIFF: ${{ inputs.pr-diff }}
+        MERGE_GUARD_GITHUB_TOKEN: ${{ inputs.github-token }}
       run: node "${{ github.action_path }}/check.mjs"
     - name: Upload merge guard proof
       if: always()

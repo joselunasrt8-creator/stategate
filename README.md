@@ -2,9 +2,9 @@
 
 ![ContinuityOS Merge Guard](7894E300-3D37-45CC-BDA5-3B6C6D90E118.png)
 
-> Deterministically validate pull request identity before merge.
+> Deterministically validate pull request identity and the exact canonical textual diff before merge.
 
-ContinuityOS Merge Guard is a portable GitHub Action that validates canonical pull request identity, applies explicit author policy, emits a proof artifact, and exposes a load-bearing GitHub status check.
+ContinuityOS Merge Guard is a portable GitHub Action that validates canonical pull request identity, binds it to the exact canonical pull-request diff, applies explicit author policy, emits a proof artifact, and exposes a load-bearing GitHub status check.
 
 ## Hero Architecture
 
@@ -12,6 +12,7 @@ ContinuityOS Merge Guard is a portable GitHub Action that validates canonical pu
 PR
 ↓
 Canonical PR Identity
++ Canonical PR Diff
 + Explicit Author Policy
 ↓
 Canonicalization
@@ -34,6 +35,7 @@ Required Status Check
 This action owns:
 
 - canonical PR identity normalization
+- canonical pull-request diff binding
 - explicit author-policy validation
 - canonical hashing
 - proof emission
@@ -48,19 +50,21 @@ This action does not own:
 - runtime governance
 - merge authorization
 
-Merge Guard validates identity only. Final merge decisions remain the responsibility of GitHub branch protection and repository policy.
+Merge Guard validates identity and the exact textual patch it evaluated. Final merge decisions remain the responsibility of GitHub branch protection and repository policy.
 
 ## What this proves
 
-This proves the PR identity object and explicit author-policy scope are complete, canonicalized, hashed, and proof-bound before merge eligibility:
+This proves the PR identity object, exact canonical diff, and explicit author-policy scope are complete, canonicalized, hashed, and proof-bound before merge eligibility:
 
 ```text
 validated_object == merge_guard_object
+validated_diff == merged_diff
 ```
 
 Boundary statements:
 
-- The action does not inspect the PR diff.
+- Diff binding proves which textual patch was evaluated. It does not prove that the patch is correct, safe, reviewed, or approved.
+- Review binding remains a separate concern under Issue #33.
 - The action does not validate review approvals.
 - The action does not classify humans or agents from hidden platform authority.
 - The action does not bind the final merge commit.
@@ -89,6 +93,8 @@ jobs:
           actor: ${{ github.event.pull_request.user.login }}
 ```
 
+When `pr-diff` is omitted, the action fetches the pull request JSON and GitHub diff for the supplied `repo`, `pr-number`, `base-sha`, and `head-sha` using `github-token`. The fetched pull-request `head.sha` and `base.sha` must match the evaluated inputs or the action fails closed to `NULL`.
+
 ## Enforce as a required check
 
 After committing the workflow, configure branch protection to require the `merge-guard` job before merge. The action exits non-zero for `NULL`, so GitHub branch protection can use this job directly as the load-bearing required status check.
@@ -99,6 +105,7 @@ After committing the workflow, configure branch protection to require the `merge
 Pull Request
         ↓
 Canonical Identity
++ Canonical Diff
         ↓
 Validation
         ↓
@@ -120,6 +127,7 @@ Each run produces:
 | `result` | `VALID` or `NULL` |
 | `proof_id` | `MERGE_GUARD-{pr_number}-{head_sha[:8]}` |
 | `proof_hash` | sha256 of the canonical payload |
+| `diff_hash` | sha256 of the canonical pull request diff |
 | `proof_url` | path to `MERGE_GUARD_PROOF.json` |
 | `author_kind` | normalized `agent`, `human`, or `unknown` author scope |
 | `null_reasons` | comma-separated NULL reason codes, empty for `VALID` |
@@ -129,6 +137,29 @@ Each run produces:
 | `attribution_evidence_hash` | sha256 of the canonicalized attribution evidence |
 
 The proof is written to the job step summary and uploaded as a workflow artifact named `MERGE_GUARD_PROOF`.
+
+## Canonical diff binding
+
+The proof payload includes:
+
+```json
+{
+  "base_sha": "...",
+  "head_sha": "...",
+  "diff_hash": "sha256:..."
+}
+```
+
+The `diff_hash` is computed from canonical diff bytes using these deterministic normalization rules:
+
+- input must be a non-empty Git-style unified diff containing at least one `diff --git` file header;
+- CRLF and CR transport line endings are normalized to LF;
+- the canonical byte stream ends with exactly one terminal LF;
+- file order and hunk order are preserved exactly as received;
+- patch text, paths, hunk headers, context lines, additions, deletions, mode lines, index lines, rename/copy metadata, and binary patch markers are preserved;
+- no semantic equivalence is inferred between different textual patches.
+
+Merge Guard fails closed to `NULL` when diff acquisition fails, the diff is missing or malformed, the fetched pull-request head/base SHA does not match the evaluated inputs, a supplied prior proof hash no longer matches the current canonical object, or a post-validation object mutation is detected.
 
 ## Read outputs in later steps
 

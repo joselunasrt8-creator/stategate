@@ -3,11 +3,12 @@
 // Deterministic conformance test for the Merge Guard decision logic.
 // No network, no GitHub API — runs evaluate() directly against fixtures.
 
-import { readdirSync, readFileSync } from 'node:fs'
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
+import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { acquireReviewEvidence, evaluate } from './check.mjs'
-import { proofFromDecision, validateMergeGuard } from './guard.mjs'
+import { proofFromDecision, validateMergeGuard, validatorIdentity } from './guard.mjs'
 
 const dir = dirname(fileURLToPath(import.meta.url))
 const fixturesDir = join(dir, 'fixtures')
@@ -209,6 +210,54 @@ assertCase('diff-binding-post-validation-mutation', postValidationMutation.resul
 const replayA = evaluate(baseInput)
 const replayB = evaluate(JSON.parse(JSON.stringify(baseInput)))
 assertCase('diff-binding-deterministic-replay', replayA.result === replayB.result && replayA.canonical_hash === replayB.canonical_hash, 'deterministic replay produces identical result and proof hash')
+
+
+
+console.log('\n=== Release metadata and manifest tests ===\n')
+
+const identityA = validatorIdentity()
+const identityB = validatorIdentity()
+assertCase('validator-metadata-deterministic', JSON.stringify(identityA) === JSON.stringify(identityB) && identityA.validator_name === 'continuity-merge-guard', 'validator identity is deterministic and projected from release metadata')
+
+const proofWithValidator = proofFromDecision(canonicalEntry)
+assertCase('proof-includes-validator-identity', proofWithValidator.validator?.validator_version === identityA.validator_version && proofWithValidator.validator?.validator_release_hash === identityA.validator_release_hash, 'proof contains validator identity envelope')
+assertCase('validator-metadata-preserves-result-and-hash-boundary', canonicalEntry.result === 'VALID' && proofWithValidator.canonical_hash === canonicalEntry.canonical_hash && !('validator' in canonicalEntry.canonical_payload), 'validator metadata does not alter VALID/NULL outcome or canonical payload hash')
+
+function runNode(args) {
+  return spawnSync(process.execPath, args, { encoding: 'utf8' })
+}
+
+const manifestBefore = readFileSync(join(dir, 'release/RELEASE_MANIFEST.json'), 'utf8')
+const buildOnce = runNode(['scripts/build-release-manifest.mjs'])
+const manifestAfterFirst = readFileSync(join(dir, 'release/RELEASE_MANIFEST.json'), 'utf8')
+const buildTwice = runNode(['scripts/build-release-manifest.mjs'])
+const manifestAfterSecond = readFileSync(join(dir, 'release/RELEASE_MANIFEST.json'), 'utf8')
+assertCase('release-manifest-stable-generation', buildOnce.status === 0 && buildTwice.status === 0 && manifestAfterFirst === manifestAfterSecond, 'release manifest generation is stable across repeated runs')
+
+const verifyOk = runNode(['scripts/verify-release.mjs'])
+assertCase('release-verification-current-tree', verifyOk.status === 0, 'release verification accepts current metadata, changelog, hashes, and aggregate release hash')
+
+function withRestoredFile(path, mutate, check) {
+  const full = join(dir, path)
+  const original = readFileSync(full, 'utf8')
+  try {
+    writeFileSync(full, mutate(original))
+    return check()
+  } finally {
+    writeFileSync(full, original)
+  }
+}
+
+const malformedMetadata = withRestoredFile('release/validator-metadata.json', original => original.replace('"validator_name"', '"validator_name_broken"'), () => runNode(['scripts/verify-release.mjs']))
+assertCase('release-verification-rejects-malformed-metadata', malformedMetadata.status !== 0, 'malformed published metadata fails release verification')
+
+const changedRuntime = withRestoredFile('check.mjs', original => `${original}\n// temporary release verification mutation\n`, () => runNode(['scripts/verify-release.mjs']))
+assertCase('release-verification-detects-runtime-hash-change', changedRuntime.status !== 0, 'changed runtime file invalidates release verification')
+
+const changelogMismatch = withRestoredFile('CHANGELOG.md', original => original.replace('## [1.0.0]', '## [1.0.x]'), () => runNode(['scripts/verify-release.mjs']))
+assertCase('release-verification-detects-changelog-mismatch', changelogMismatch.status !== 0, 'changelog/version mismatch fails release verification')
+
+writeFileSync(join(dir, 'release/RELEASE_MANIFEST.json'), manifestBefore)
 
 const total = passCount + failCount
 console.log(`\nTotal: ${total} | PASS: ${passCount} | FAIL: ${failCount}`)

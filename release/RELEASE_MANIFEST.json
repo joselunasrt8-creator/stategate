@@ -1,0 +1,111 @@
+{
+  "manifest_version": "1.0.0",
+  "source_commit": "b26c7c29b1f52ac78f6112f9b1a2f1180b00a600",
+  "release_hash": "sha256:790ed821e953db2b8ea4b00098fadb88cbed0b62a6404ced7c4c04539dbe6947",
+  "files": [
+    {
+      "path": "action.yml",
+      "sha256": "1f3bacf052deeaaaec35de9067c924902199a19707a03928d1e22e9794bfdbe0"
+    },
+    {
+      "path": "attribution.mjs",
+      "sha256": "3e413c7741373b5a4eb01b020aecf082d1689fd53d373d0714e2967041324a21"
+    },
+    {
+      "path": "canonical.mjs",
+      "sha256": "71fdcb966e2c78f359f36c92fadc31d035de28262cca282b10f7125e6d28537e"
+    },
+    {
+      "path": "check.mjs",
+      "sha256": "5c8ee8056b2dd0dd539360600564249cb46a77c8ff4d2e5914e11a489906b6af"
+    },
+    {
+      "path": "fixtures/agent-authored-required-human-null.json",
+      "sha256": "06c13544dbbcc9a5662ac26839aca15a2e43719a51adaaf6b3dfbe5a92e4b02d"
+    },
+    {
+      "path": "fixtures/agent-authored-required-valid.json",
+      "sha256": "ea7cbaeb20fb6337322bb6db4fdc46e6603863b4aa2dffacc2f2778111a0f168"
+    },
+    {
+      "path": "fixtures/attribution-agent-body-block.json",
+      "sha256": "5955c65ce5915561ce0c13068dc9ddc3d141355431d6edf683e339821b3c9495"
+    },
+    {
+      "path": "fixtures/attribution-agent-commit-trailer.json",
+      "sha256": "cb9b3ddf8a1de62ca417d720b9b6be321140d2c3b5b8d8819d55e1b1c5243047"
+    },
+    {
+      "path": "fixtures/attribution-agent-label.json",
+      "sha256": "94984b8a6cbc4d8607fcb1e1e080d2136073a0b26c2fb5c11e79a46c0b464db6"
+    },
+    {
+      "path": "fixtures/attribution-ambiguous-conflict.json",
+      "sha256": "caa7b44ea00f086ad51dacdc5d191e69c19a4c8a2fae5df8aa8725de8bcacb8d"
+    },
+    {
+      "path": "fixtures/attribution-bot-observed.json",
+      "sha256": "bdb41968de9cfd43b788293456a7f7e0a3d113fac80b0f481866336ec8c0e1d2"
+    },
+    {
+      "path": "fixtures/attribution-heuristic-branch-only.json",
+      "sha256": "25889ba7d33ee3a284c97556c7d2c6da39a9f97a2dda7d38398b416122f60cea"
+    },
+    {
+      "path": "fixtures/attribution-human-label.json",
+      "sha256": "309abfd6dd9ec9ca2f4de17b309323e5f2cd2be622e338454cdf62f906019633"
+    },
+    {
+      "path": "fixtures/attribution-missing-human-pr.json",
+      "sha256": "d2b0e69ba21e92f7d99535eaffeb42483dbea83d09123f510646fb450349ba78"
+    },
+    {
+      "path": "fixtures/attribution-trailer-vs-label-conflict.json",
+      "sha256": "ee8532171e84deca8bcd2654e45a79f83e3309c955ae56c8e24127c877b5460a"
+    },
+    {
+      "path": "fixtures/hash-determinism.json",
+      "sha256": "8eed0a5f5822f177222ffdc3d6b53f8cc5521cb140d89581ead636f5d610c064"
+    },
+    {
+      "path": "fixtures/invalid-agent-policy-field-null.json",
+      "sha256": "db96375c688e8ee555d375bd2aa71f5f03f8516d35e7cd3d5ec0b5b153af3aba"
+    },
+    {
+      "path": "fixtures/missing-actor.json",
+      "sha256": "06cd003988662524e265a051e8d7fac9c5648da42736f747c67c1071aa1f7392"
+    },
+    {
+      "path": "fixtures/missing-head-sha.json",
+      "sha256": "6d8b6099a0d28706756e24ee484ffa7db7087ed393d34d53c4a2e1c72e21bda2"
+    },
+    {
+      "path": "fixtures/review-required-missing-null.json",
+      "sha256": "91c3d9f68443ceb39b57d0acf0bc33afe45468429e8e7afad8c4a6fbee9af082"
+    },
+    {
+      "path": "fixtures/review-stale-head-null.json",
+      "sha256": "ab12ab9f051b6e876256d3d09bd6297d440c51f4ab7dc1c4f55c005ba1618a66"
+    },
+    {
+      "path": "fixtures/review-valid-current-head.json",
+      "sha256": "c8e447b6e47d0d6ed9c10fd0b09aaadf16a5429ab7e3b351fc7176a54f109d09"
+    },
+    {
+      "path": "fixtures/valid-pr.json",
+      "sha256": "4adf9e998b2ce09986ec113be6e624c69f0c2ee7f8d87c20e28369df9a136f19"
+    },
+    {
+      "path": "guard.mjs",
+      "sha256": "a941e88160e09c1b01dd1b6d6d0bb3241f7285ebdf3e84f2fbe6ec3b2acb03d7"
+    },
+    {
+      "path": "release/validator-metadata.json",
+      "sha256": "c114c55a880a66374d3869cf0234a693385c08de7015a48f86b554b2bd79de35"
+    },
+    {
+      "path": "test.mjs",
+      "sha256": "3b39689a95e46a644846bb4bd5c1708118e2a6223268b0d6594458599b19a958"
+    }
+  ]
+}

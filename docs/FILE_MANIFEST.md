@@ -12,8 +12,8 @@
 | Standalone path | Canonical source path | Purpose |
 | --- | --- | --- |
 | `action.yml` | `actions/continuity-merge-guard/action.yml` | Root GitHub Action metadata for Marketplace discovery and action execution. |
-| `check.mjs` | `actions/continuity-merge-guard/check.mjs` | Canonical Merge Guard decision logic, proof artifact writer, outputs, and fail-closed CLI entrypoint. |
-| `canonical.mjs` | `actions/continuity-merge-guard/canonical.mjs` | Deterministic canonicalization and SHA-256 implementation. |
+| `check.mjs` | `actions/continuity-merge-guard/check.mjs` | Canonical Merge Guard decision logic, pull-request diff acquisition, proof artifact writer, outputs, and fail-closed CLI entrypoint. |
+| `canonical.mjs` | `actions/continuity-merge-guard/canonical.mjs` | Deterministic JSON canonicalization, canonical diff normalization, and SHA-256 implementation. |
 | `attribution.mjs` | `actions/continuity-merge-guard/attribution.mjs` | Canonical Agent Identity attribution metadata classification. |
 | `test.mjs` | `actions/continuity-merge-guard/test.mjs` | Canonical fixture-based conformance test harness. |
 | `fixtures/*.json` | `actions/continuity-merge-guard/fixtures/*.json` | Local conformance fixtures for VALID/NULL, policy, attribution, and deterministic hash checks. |
@@ -33,6 +33,7 @@
 - Runtime: Node.js on the GitHub-hosted runner.
 - Action dependency: `actions/upload-artifact@v4` for `MERGE_GUARD_PROOF` artifact upload.
 - No npm package install, package manager, compiled `dist`, or external network dependency is required by the action logic.
+- The action uses the GitHub REST API only to fetch pull-request JSON and the exact GitHub pull-request diff when a caller does not provide `pr-diff`; unavailable or mismatched diff provenance fails closed to `NULL`.
 
 ## Verification
 

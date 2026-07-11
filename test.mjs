@@ -6,7 +6,7 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { evaluate } from './check.mjs'
+import { acquireReviewEvidence, evaluate } from './check.mjs'
 import { proofFromDecision, validateMergeGuard } from './guard.mjs'
 
 const dir = dirname(fileURLToPath(import.meta.url))
@@ -223,6 +223,10 @@ const reviewBase = { ...baseInput, require_review_approval: 'true', minimum_appr
 const disabled = validateMergeGuard({ ...baseInput, require_review_approval: 'false' })
 assertCase('review-disabled-preserves-valid', disabled.result === 'VALID' && disabled.review_status === 'not_required' && !('review_policy' in disabled.canonical_payload), 'review policy disabled preserves existing VALID behavior')
 
+
+const disabledInvalidMinimum = validateMergeGuard({ ...baseInput, require_review_approval: 'false', minimum_approvals: 'not-a-number' })
+assertCase('review-disabled-ignores-invalid-minimum', disabledInvalidMinimum.result === 'VALID' && disabledInvalidMinimum.review_status === 'not_required' && disabledInvalidMinimum.minimum_approvals === null && !('review_policy' in disabledInvalidMinimum.canonical_payload), 'disabled review policy ignores review-only inputs completely')
+
 const validReview = validateMergeGuard({ ...reviewBase, review_evidence: reviewEvidence(baseInput.head_sha, [approval('alice')]) })
 assertCase('review-valid-current-head-approval', validReview.result === 'VALID' && validReview.approval_count === 1 && validReview.review_head_sha === baseInput.head_sha && validReview.review_evidence_hash?.startsWith('sha256:'), 'one current-head approval satisfies review binding')
 
@@ -247,6 +251,10 @@ assertCase('review-conflicting-evidence', conflicting.result === 'NULL' && confl
 const insufficient = validateMergeGuard({ ...reviewBase, minimum_approvals: '2', review_evidence: reviewEvidence(baseInput.head_sha, [approval('alice')]) })
 assertCase('review-insufficient-approval-count', insufficient.result === 'NULL' && insufficient.null_reasons.includes('INSUFFICIENT_APPROVALS'), 'minimum approvals are enforced')
 
+
+const commentedOnly = validateMergeGuard({ ...reviewBase, review_evidence: reviewEvidence(baseInput.head_sha, [approval('alice', baseInput.head_sha, '2026-01-01T00:00:00Z', 'COMMENTED')]) })
+assertCase('review-commented-only-requires-approval', commentedOnly.result === 'NULL' && commentedOnly.null_reasons.includes('REVIEW_APPROVAL_REQUIRED') && commentedOnly.null_reasons.includes('INSUFFICIENT_APPROVALS'), 'comment-only current-head reviews do not satisfy required approval')
+
 const duplicate = validateMergeGuard({ ...reviewBase, review_evidence: reviewEvidence(baseInput.head_sha, [approval('alice'), approval('alice', baseInput.head_sha, '2026-01-02T00:00:00Z')]) })
 assertCase('review-duplicate-reviewer-latest-only', duplicate.result === 'VALID' && duplicate.approval_count === 1, 'duplicate reviews by one reviewer count once using the latest review')
 
@@ -265,6 +273,38 @@ assertCase('review-proof-from-decision-exactness', reviewProof.review_required =
 
 const reviewCompatibility = evaluate({ ...reviewBase, review_evidence: reviewEvidence(baseInput.head_sha, [approval('alice')]) })
 assertCase('review-evaluate-alias-matches-validate', reviewCompatibility.canonical_hash === validReview.canonical_hash && reviewCompatibility.result === validReview.result, 'evaluate compatibility alias still matches validateMergeGuard with review evidence')
+
+
+
+const originalFetch = globalThis.fetch
+try {
+  const page1Url = 'https://api.github.com/repos/owner/repo/pulls/32/reviews?per_page=100'
+  const page2Url = 'https://api.github.com/reviews?page=2'
+  const fetchedUrls = []
+  globalThis.fetch = async url => {
+    fetchedUrls.push(url)
+    if (url === page1Url) {
+      return {
+        ok: true,
+        headers: { get: name => name === 'link' ? `<${page2Url}>; rel="next"` : '' },
+        json: async () => [{ user: { login: 'alice' }, state: 'APPROVED', submitted_at: '2026-01-01T00:00:00Z', commit_id: baseInput.head_sha }],
+      }
+    }
+    if (url === page2Url) {
+      return {
+        ok: true,
+        headers: { get: () => '' },
+        json: async () => [{ user: { login: 'bob' }, state: 'APPROVED', submitted_at: '2026-01-02T00:00:00Z', commit_id: baseInput.head_sha }],
+      }
+    }
+    return { ok: false, headers: { get: () => '' }, json: async () => [] }
+  }
+  const acquiredReviews = await acquireReviewEvidence({ ...baseInput, github_token: 'token' })
+  const acquiredEvidence = JSON.parse(acquiredReviews.review_evidence)
+  assertCase('review-acquisition-pagination', acquiredReviews.ok && fetchedUrls.length === 2 && acquiredEvidence.reviews.length === 2, 'GitHub review acquisition follows pagination links before normalization')
+} finally {
+  globalThis.fetch = originalFetch
+}
 
 const reviewTotal = passCount + failCount
 console.log(`\nReview-inclusive Total: ${reviewTotal} | PASS: ${passCount} | FAIL: ${failCount}`)

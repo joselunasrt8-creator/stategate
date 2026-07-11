@@ -53,13 +53,22 @@ export async function acquirePullRequestDiff(input) {
 }
 
 
+function nextPageUrl(linkHeader) {
+  const links = normalizeString(linkHeader).split(',')
+  for (const link of links) {
+    const match = link.match(/<([^>]+)>;\s*rel=\"next\"/)
+    if (match) return match[1]
+  }
+  return ''
+}
+
 export async function acquireReviewEvidence(input) {
   const repo = normalizeString(input.repo)
   const pr_number = normalizeString(input.pr_number)
   const token = normalizeString(input.github_token)
   const apiUrl = normalizeString(input.github_api_url) || 'https://api.github.com'
   if (!repo || !pr_number || !token) return { ok: false, reason: 'REVIEW_ACQUISITION_FAILED', review_evidence: '' }
-  const reviewsUrl = `${apiUrl.replace(/\/$/, '')}/repos/${repo}/pulls/${pr_number}/reviews?per_page=100`
+  let reviewsUrl = `${apiUrl.replace(/\/$/, '')}/repos/${repo}/pulls/${pr_number}/reviews?per_page=100`
   const headers = {
     accept: 'application/vnd.github+json',
     authorization: `Bearer ${token}`,
@@ -67,10 +76,15 @@ export async function acquireReviewEvidence(input) {
     'x-github-api-version': '2022-11-28',
   }
   try {
-    const res = await fetch(reviewsUrl, { headers })
-    if (!res.ok) return { ok: false, reason: 'REVIEW_ACQUISITION_FAILED', review_evidence: '' }
-    const data = await res.json()
-    if (!Array.isArray(data)) return { ok: false, reason: 'REVIEW_ACQUISITION_FAILED', review_evidence: '' }
+    const data = []
+    while (reviewsUrl) {
+      const res = await fetch(reviewsUrl, { headers })
+      if (!res.ok) return { ok: false, reason: 'REVIEW_ACQUISITION_FAILED', review_evidence: '' }
+      const page = await res.json()
+      if (!Array.isArray(page)) return { ok: false, reason: 'REVIEW_ACQUISITION_FAILED', review_evidence: '' }
+      data.push(...page)
+      reviewsUrl = nextPageUrl(res.headers?.get?.('link'))
+    }
     const review_evidence = {
       head_sha: normalizeString(input.head_sha),
       reviews: data.map(r => ({

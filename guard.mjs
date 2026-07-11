@@ -57,11 +57,15 @@ export function normalizeReviewEvidence(raw) {
 
 function evaluateReviewPolicy(input) {
   const review_required = boolInput(input.require_review_approval)
+  if (!review_required) {
+    return {
+      policy: { review_required: false, minimum_approvals: null },
+      result: { review_status: REVIEW_STATUS_DISABLED, approval_count: 0, review_head_sha: null, review_evidence_hash: null },
+      null_reasons: [],
+    }
+  }
   const minimum_approvals = normalizeMinimumApprovals(input.minimum_approvals)
   const policy = { review_required, minimum_approvals: minimum_approvals ?? null }
-  if (!review_required) {
-    return { policy, result: { review_status: REVIEW_STATUS_DISABLED, approval_count: 0, review_head_sha: null, review_evidence_hash: null }, null_reasons: minimum_approvals === null ? ['REVIEW_EVIDENCE_MALFORMED'] : [] }
-  }
   if (minimum_approvals === null) {
     return { policy, result: { review_status: 'malformed', approval_count: 0, review_head_sha: null, review_evidence_hash: null }, null_reasons: ['REVIEW_EVIDENCE_MALFORMED'] }
   }
@@ -105,7 +109,7 @@ function evaluateReviewPolicy(input) {
     if (r.state === 'DISMISSED') reasons.push('REVIEW_DISMISSED')
     if (r.state === 'APPROVED') approval_count++
   }
-  if (latest.size === 0 && evidence.reviews.length === 0) reasons.push('REVIEW_APPROVAL_REQUIRED')
+  if (approval_count === 0) reasons.push('REVIEW_APPROVAL_REQUIRED')
   if (approval_count < minimum_approvals) reasons.push('INSUFFICIENT_APPROVALS')
   if (reasons.length > 0) status = reasons.includes('REVIEW_HEAD_SHA_MISMATCH') ? 'head_mismatch' : reasons.includes('REVIEW_STALE') ? 'stale' : reasons.includes('REVIEW_DISMISSED') ? 'dismissed' : reasons.includes('REVIEW_CONFLICT') ? 'conflict' : 'insufficient'
   return { policy, result: { review_status: status, approval_count, review_head_sha: evidence.head_sha, review_evidence_hash, review_evidence: evidence }, null_reasons: [...new Set(reasons)] }

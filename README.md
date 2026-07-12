@@ -6,7 +6,6 @@ VALID | NULL | PROOF
 
 StateGate validates whether the exact proposed pull-request mutation remains authorized, policy-compliant, current, and eligible to become canonical repository state.
 
-![Continufy StateGate Marketplace listing](7894E300-3D37-45CC-BDA5-3B6C6D90E118.png)
 
 ## Scope
 

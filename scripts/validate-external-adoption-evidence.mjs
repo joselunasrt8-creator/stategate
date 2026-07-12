@@ -1,34 +1,69 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs'
-import { basename } from 'node:path'
+import { basename, dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const dir = dirname(fileURLToPath(import.meta.url))
+const schema = JSON.parse(readFileSync(join(dir, '..', 'schemas', 'external-adoption-evidence.schema.json'), 'utf8'))
 
 const allowed = {
-  trust_boundary_class: ['SAME_OWNER','SAME_ORGANIZATION_SHARED_CONTROL','COLLABORATOR_CONTROLLED','INDEPENDENT_EXTERNAL_MAINTAINER','SANDBOX_OR_TEST','UNKNOWN'],
-  adoption_stage: ['STAGE_0_NOT_INSTALLED','STAGE_1_EXTERNAL_INSTALLATION','STAGE_2_FIRST_VALID_RUN','STAGE_3_FIRST_NULL_BLOCK','STAGE_4_REQUIRED_CHECK_ENABLED','STAGE_5_REPEAT_USAGE','STAGE_6_OPERATOR_RETAIN','STAGE_7_REMOVAL_DEGRADATION','STAGE_8_INDEPENDENT_DEPENDENCY_CONFIRMED'],
-  status: ['OBSERVED','UNOBSERVED','BLOCKED','NOT_APPLICABLE','DISPUTED'],
-  evidence_status: ['OBSERVED','UNOBSERVED','BLOCKED','NOT_APPLICABLE','DISPUTED'],
-  condition: ['REMOVED','DISABLED','BYPASSED','UNAVAILABLE','RETURNED_NULL','NOT_APPLICABLE'],
-  decision: ['RETAIN','REMOVE','UNDECIDED','NOT_APPLICABLE']
+  adoption_stage: ['STAGE_0_NOT_INSTALLED','STAGE_1_EXTERNAL_INSTALLATION','STAGE_2_FIRST_VALID_RUN','STAGE_3_FIRST_NULL_BLOCK','STAGE_4_REQUIRED_CHECK_ENABLED','STAGE_5_REPEAT_USAGE','STAGE_6_OPERATOR_RETAIN','STAGE_7_REMOVAL_DEGRADATION','STAGE_8_INDEPENDENT_DEPENDENCY_CONFIRMED']
 }
 const stageRank = Object.fromEntries(allowed.adoption_stage.map((s, i) => [s, i]))
-const required = ['evidence_schema_version','evidence_id','observed_at','repository','repository_owner','operator','trust_boundary_class','evaluator_relationship','stategate_version','stategate_ref','workflow_path','required_check_name','adoption_stage','evidence_status','installation_evidence','valid_run_evidence','null_run_evidence','repeat_usage_evidence','retention_evidence','removal_experiment','degradation_observation','proof_artifact_hashes','limitations','attestation']
+
 function err(path, msg) { return `${path}: ${msg}` }
 function hasObserved(o) { return o?.status === 'OBSERVED' }
-function validate(e) {
-  const errors = []
-  for (const k of required) if (!(k in e)) errors.push(err(k, 'required field missing'))
-  if (e.evidence_schema_version !== '1.0.0') errors.push(err('evidence_schema_version', 'must be 1.0.0'))
-  for (const k of ['trust_boundary_class','adoption_stage','evidence_status']) if (k in e && !allowed[k].includes(e[k])) errors.push(err(k, `unsupported value ${JSON.stringify(e[k])}`))
-  for (const [p, o] of Object.entries({ installation_evidence:e.installation_evidence, valid_run_evidence:e.valid_run_evidence, null_run_evidence:e.null_run_evidence, repeat_usage_evidence:e.repeat_usage_evidence, retention_evidence:e.retention_evidence, removal_experiment:e.removal_experiment, degradation_observation:e.degradation_observation })) {
-    if (!o || typeof o !== 'object' || Array.isArray(o)) { errors.push(err(p, 'must be object')); continue }
-    if (!allowed.status.includes(o.status)) errors.push(err(`${p}.status`, `unsupported value ${JSON.stringify(o.status)}`))
+function pointerDecode(part) { return part.replace(/~1/g, '/').replace(/~0/g, '~') }
+function resolveRef(ref) {
+  if (!ref.startsWith('#/')) throw new Error(`unsupported schema ref ${ref}`)
+  return ref.slice(2).split('/').map(pointerDecode).reduce((node, part) => node?.[part], schema)
+}
+function isObject(value) { return value !== null && typeof value === 'object' && !Array.isArray(value) }
+function typeName(value) {
+  if (Array.isArray(value)) return 'array'
+  if (value === null) return 'null'
+  return typeof value
+}
+function validDateTime(value) {
+  if (typeof value !== 'string') return false
+  const isoDateTime = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/
+  return isoDateTime.test(value) && !Number.isNaN(Date.parse(value))
+}
+function validateSchemaNode(node, value, path, errors) {
+  if (node.$ref) return validateSchemaNode(resolveRef(node.$ref), value, path, errors)
+  if (node.const !== undefined && value !== node.const) errors.push(err(path, `must equal ${JSON.stringify(node.const)}`))
+  if (node.enum && !node.enum.includes(value)) errors.push(err(path, `unsupported value ${JSON.stringify(value)}`))
+  if (node.type) {
+    const actual = typeName(value)
+    if (node.type === 'integer') {
+      if (!Number.isInteger(value)) errors.push(err(path, `must be integer, got ${actual}`))
+    } else if (actual !== node.type) {
+      errors.push(err(path, `must be ${node.type}, got ${actual}`))
+    }
   }
-  if (e.removal_experiment && !allowed.condition.includes(e.removal_experiment.condition)) errors.push(err('removal_experiment.condition', `unsupported value ${JSON.stringify(e.removal_experiment.condition)}`))
-  if (e.retention_evidence && !allowed.decision.includes(e.retention_evidence.operator_decision)) errors.push(err('retention_evidence.operator_decision', `unsupported value ${JSON.stringify(e.retention_evidence.operator_decision)}`))
-  if (!Array.isArray(e.proof_artifact_hashes)) errors.push(err('proof_artifact_hashes', 'must be array'))
-  else e.proof_artifact_hashes.forEach((h, i) => { if (!/^sha256:[0-9a-f]{64}$/.test(h)) errors.push(err(`proof_artifact_hashes[${i}]`, 'must be sha256:<64 lowercase hex>')) })
-  if (!Array.isArray(e.limitations)) errors.push(err('limitations', 'must be array'))
-
+  if (typeof value === 'string') {
+    if (node.minLength !== undefined && value.length < node.minLength) errors.push(err(path, `length must be >= ${node.minLength}`))
+    if (node.pattern && !(new RegExp(node.pattern).test(value))) errors.push(err(path, `must match pattern ${node.pattern}`))
+    if (node.format === 'date-time' && !validDateTime(value)) errors.push(err(path, 'must be date-time'))
+  }
+  if (typeof value === 'number' && node.minimum !== undefined && value < node.minimum) errors.push(err(path, `must be >= ${node.minimum}`))
+  if (Array.isArray(value) && node.items) value.forEach((item, index) => validateSchemaNode(node.items, item, `${path}[${index}]`, errors))
+  if (isObject(value)) {
+    const properties = node.properties || {}
+    for (const required of node.required || []) if (!(required in value)) errors.push(err(`${path}.${required}`.replace(/^\$\./, ''), 'required field missing'))
+    if (node.additionalProperties === false) {
+      for (const key of Object.keys(value)) if (!(key in properties)) errors.push(err(`${path}.${key}`.replace(/^\$\./, ''), 'additional property not allowed'))
+    }
+    for (const [key, child] of Object.entries(properties)) if (key in value) validateSchemaNode(child, value[key], `${path}.${key}`.replace(/^\$\./, ''), errors)
+  }
+}
+function validateSchema(evidence) {
+  const errors = []
+  validateSchemaNode(schema, evidence, '$', errors)
+  return errors
+}
+function validateSemantics(e) {
+  const errors = []
   const r = stageRank[e.adoption_stage] ?? -1
   if (r >= 1 && !hasObserved(e.installation_evidence)) errors.push(err('installation_evidence.status', 'must be OBSERVED for stage >= STAGE_1'))
   if (r >= 2 && !hasObserved(e.valid_run_evidence)) errors.push(err('valid_run_evidence.status', 'must be OBSERVED for stage >= STAGE_2'))
@@ -47,7 +82,10 @@ function validate(e) {
     if (e.evidence_status === 'DISPUTED' || [e.installation_evidence,e.valid_run_evidence,e.null_run_evidence,e.repeat_usage_evidence,e.retention_evidence,e.removal_experiment,e.degradation_observation].some(x => x?.status === 'DISPUTED')) errors.push(err('evidence_status', 'no unresolved evidence dispute allowed for independent dependency'))
     if (!(e.degradation_observation?.validation_property_lost && e.degradation_observation?.proof_property_lost && e.degradation_observation?.merge_eligibility_property_lost)) errors.push(err('degradation_observation', 'validation, proof, and merge-eligibility loss must all be observed'))
   }
-  return errors.sort()
+  return errors
+}
+function validate(evidence) {
+  return [...validateSchema(evidence), ...validateSemantics(evidence)].sort()
 }
 
 if (process.argv.length < 3) { console.error('usage: validate-external-adoption-evidence.mjs <evidence.json> [...]'); process.exit(2) }

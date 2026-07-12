@@ -1,11 +1,11 @@
 {
   "manifest_version": "1.0.0",
   "source_commit": "development",
-  "release_hash": "sha256:9d7cc4f481b6d5bd0999ac1de63218e16bccfe4a78d6aa70cb4a84cded469a93",
+  "release_hash": "sha256:231cb8980831e9b5e6f8a8484979bc6b2b336efe86184bdab7c832a6f6e4d0d1",
   "files": [
     {
       "path": "action.yml",
-      "sha256": "a153b8c15e5225fe6f5b65b72859b197275fcf5d7cc62dd4b9181037045daf06"
+      "sha256": "c8e4f8621e166e055a63fe50b5248b34459a3449a8f9eb44d8c3580cc3506f0a"
     },
     {
       "path": "attribution.mjs",
@@ -105,7 +105,7 @@
     },
     {
       "path": "test.mjs",
-      "sha256": "f715667695c90f82665d729bb02e7674ac048e0b9955cd17356a932876a52c45"
+      "sha256": "9b4ad318ad78965d8134d8b7861b1ac2bb5528a8941ae036570e032cd42d8485"
     }
   ]
 }

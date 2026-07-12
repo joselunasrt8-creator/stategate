@@ -10,7 +10,7 @@ Stable format: each release records semantic version, release date, source commi
 - Compatibility range: `>=1.0.0 <2.0.0`
 
 ### Added
-- StateGate v1.0.0 release preparation: first canonical release under the StateGate identity, with Marketplace metadata and install examples updated to `joselunasrt8-creator/stategate@v1`.
+- StateGate v1.0.0 release preparation: first canonical release under the StateGate identity, with Marketplace listing metadata updated to `Continufy StateGate` and install examples updated to `joselunasrt8-creator/stategate@v1`.
 - Validator proof envelope and release-governance tooling are staged for the next compatible release; this branch must not identify itself as the already-published `v1.0.0` implementation.
 
 ### Compatibility impact

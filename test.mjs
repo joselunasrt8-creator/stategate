@@ -217,7 +217,7 @@ assertCase('diff-binding-deterministic-replay', replayA.result === replayB.resul
 console.log('\n=== StateGate branding and compatibility contract tests ===\n')
 
 const actionMetadata = readFileSync(join(dir, 'action.yml'), 'utf8')
-assertCase('action-metadata-stategate-name', /^name:\s*['"]StateGate['"]\s*$/m.test(actionMetadata), 'action metadata exposes the StateGate Marketplace name')
+assertCase('action-metadata-stategate-name', /^name:\s*['"]Continufy StateGate['"]\s*$/m.test(actionMetadata), 'action metadata exposes the Continufy StateGate Marketplace name')
 assertCase('action-metadata-stategate-description', /^description:\s*['"]Govern repository state transitions\. VALID \| NULL \| PROOF\.['"]\s*$/m.test(actionMetadata), 'action metadata exposes the canonical StateGate description')
 
 const readme = readFileSync(join(dir, 'README.md'), 'utf8')

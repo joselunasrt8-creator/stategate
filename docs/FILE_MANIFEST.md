@@ -26,7 +26,7 @@
 
 - `action.yml` is kept at repository root for GitHub Marketplace compatibility.
 - Runtime path is adapted from nested source execution to root execution: `node "${{ github.action_path }}/check.mjs"`.
-- Marketplace metadata is preserved at root: action name, description, branding, and README install example using `joselunasrt8-creator/stategate@v1`.
+- Marketplace metadata is preserved at root: action name `Continufy StateGate`, description, branding, and README install example using `joselunasrt8-creator/stategate@v1`.
 - The previous invented `src/merge-guard.sh` keyword heuristic was removed; runtime behavior is Node-based canonical identity evaluation.
 
 ## Dependency notes
@@ -41,7 +41,7 @@
 - Canonical source path located in the public repository browser view at the historical upstream package path used before standalone StateGate packaging.
 - Runtime files reconciled to a single canonical Node validation implementation (`guard.mjs`) with `check.mjs` limited to runtime adaptation, diff/review acquisition, proof emission, and GitHub outputs.
 - Tests run locally:
-  - `ruby -e 'require "yaml"; data=YAML.load_file("action.yml"); raise unless data["runs"]["using"] == "composite"; raise unless data["name"] == "StateGate"'`
+  - `ruby -e 'require "yaml"; data=YAML.load_file("action.yml"); raise unless data["runs"]["using"] == "composite"; raise unless data["name"] == "Continufy StateGate"'`
   - `node --check check.mjs`
   - `node --check canonical.mjs`
   - `node --check attribution.mjs`

@@ -1,5 +1,5 @@
-name: 'StateGate'
-description: 'Govern repository state transitions. VALID | NULL | PROOF.'
+name: "Continufy StateGate"
+description: "Govern repository state transitions. VALID | NULL | PROOF."
 
 inputs:
   repo:

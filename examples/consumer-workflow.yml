@@ -4,13 +4,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  exact-pin-valid:
+  stategate:
+    name: stategate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run exact pin VALID case
-        id: stategate
-        uses: joselunasrt8-creator/stategate@v1.0.0
+
+      - name: Run StateGate VALID case
+        id: valid
+        uses: joselunasrt8-creator/stategate@v1
         with:
           repo: owner/repo
           pr-number: '1'
@@ -25,17 +27,16 @@ jobs:
             @@ -1 +1 @@
             -old
             +new
-      - uses: actions/upload-artifact@v4
-        with:
-          name: exact-pin-valid-proof
-          path: MERGE_GUARD_PROOF.json
 
-  major-pin-null:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run major pin NULL case
-        id: stategate
+      - name: Upload VALID proof artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stategate-valid-proof
+          path: MERGE_GUARD_PROOF.json
+          if-no-files-found: error
+
+      - name: Run StateGate NULL case
+        id: null
         continue-on-error: true
         uses: joselunasrt8-creator/stategate@v1
         with:
@@ -45,14 +46,22 @@ jobs:
           base-sha: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
           actor: human-user
           pr-diff: ''
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload NULL proof artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: major-pin-null-proof
+          name: stategate-null-proof
           path: MERGE_GUARD_PROOF.json
-      - name: Document outputs
+          if-no-files-found: error
+
+      - name: Assert deterministic consumer expectations
         run: |
-          echo "result=${{ steps.stategate.outputs.result }}"
-          echo "proof_id=${{ steps.stategate.outputs.proof_id }}"
-          echo "proof_hash=${{ steps.stategate.outputs.proof_hash }}"
-          echo "diff_hash=${{ steps.stategate.outputs.diff_hash }}"
-          echo "null_reasons=${{ steps.stategate.outputs.null_reasons }}"
+          test "${{ steps.valid.outputs.result }}" = "VALID"
+          test "${{ steps.null.outputs.result }}" = "NULL"
+          test -n "${{ steps.valid.outputs.proof_id }}"
+          test -n "${{ steps.valid.outputs.proof_hash }}"
+          test -n "${{ steps.null.outputs.null_reasons }}"
+          echo "required_check=stategate"
+          echo "valid_proof_id=${{ steps.valid.outputs.proof_id }}"
+          echo "valid_proof_hash=${{ steps.valid.outputs.proof_hash }}"
+          echo "null_reasons=${{ steps.null.outputs.null_reasons }}"

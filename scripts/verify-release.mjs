@@ -26,7 +26,7 @@ function tagTarget(name) {
 }
 
 for (const field of ['validator_name', 'validator_version', 'canonical_algorithm_version', 'proof_schema_version', 'compatibility_range']) requireString(metadata, field, 'release/validator-metadata.json')
-if (metadata.validator_name !== 'continuity-merge-guard') fail('unexpected validator_name')
+if (metadata.validator_name !== 'stategate') fail('unexpected validator_name')
 if (published && metadata.validator_version === 'development') fail('published verification cannot use development metadata')
 if (!published && metadata.validator_version !== 'development') fail('development verification requires development metadata; use --published for release metadata')
 if (published && tag !== `v${metadata.validator_version}`) fail(`validator_version ${metadata.validator_version} does not match tag ${tag}`)

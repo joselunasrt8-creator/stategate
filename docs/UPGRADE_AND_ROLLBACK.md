@@ -2,7 +2,7 @@
 
 ## Upgrade channels
 
-Use `uses: joselunasrt8-creator/continuity-merge-guard@v1` to follow the moving v1 channel after maintainers deliberately update the major tag. Use `@v1.0.0` or another exact semantic-version tag for reproducible patch selection.
+Use `uses: joselunasrt8-creator/stategate@v1` to follow the moving v1 channel after maintainers deliberately update the major tag. Use `@v1.0.0` or another exact semantic-version tag for reproducible patch selection.
 
 ## Exact patch upgrade
 

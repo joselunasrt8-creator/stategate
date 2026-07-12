@@ -1,23 +1,23 @@
 {
   "manifest_version": "1.0.0",
   "source_commit": "development",
-  "release_hash": "sha256:651f4df000c7578db66b08f0e32dd2b3d20e04a425034bab9922b9d6400829a0",
+  "release_hash": "sha256:9d7cc4f481b6d5bd0999ac1de63218e16bccfe4a78d6aa70cb4a84cded469a93",
   "files": [
     {
       "path": "action.yml",
-      "sha256": "1f3bacf052deeaaaec35de9067c924902199a19707a03928d1e22e9794bfdbe0"
+      "sha256": "a153b8c15e5225fe6f5b65b72859b197275fcf5d7cc62dd4b9181037045daf06"
     },
     {
       "path": "attribution.mjs",
-      "sha256": "3e413c7741373b5a4eb01b020aecf082d1689fd53d373d0714e2967041324a21"
+      "sha256": "46f3ffbd4148c286869d4e6146abfe0c942e85da356a50caa03bc1ee1a606f29"
     },
     {
       "path": "canonical.mjs",
-      "sha256": "71fdcb966e2c78f359f36c92fadc31d035de28262cca282b10f7125e6d28537e"
+      "sha256": "dffe0ba2b296faeaad51f160b1e6472ba79d1801a37792b391e357f4236c28ef"
     },
     {
       "path": "check.mjs",
-      "sha256": "5c8ee8056b2dd0dd539360600564249cb46a77c8ff4d2e5914e11a489906b6af"
+      "sha256": "1762026c58ae7cfc757e18c23f9085f74d07b7db70466b90ad954aaccf8d3bc0"
     },
     {
       "path": "fixtures/agent-authored-required-human-null.json",
@@ -97,15 +97,15 @@
     },
     {
       "path": "guard.mjs",
-      "sha256": "a941e88160e09c1b01dd1b6d6d0bb3241f7285ebdf3e84f2fbe6ec3b2acb03d7"
+      "sha256": "13c5ce0190838f2eb579acd475f889375a99e1cf7508942d9b5969e7cca0e407"
     },
     {
       "path": "release/validator-metadata.json",
-      "sha256": "328a736a61bc8d149fc0405800a1c95ee9de86a252ef1bf09c24265ef00d6b45"
+      "sha256": "4f552a19fbd23d8045c3cea9d0527c983acd12a6878b575d0d60f6779dcb85c9"
     },
     {
       "path": "test.mjs",
-      "sha256": "448d253b8417354840e57eebc8e88f36495d5696f462294ae50e65b3cb1a8d02"
+      "sha256": "f715667695c90f82665d729bb02e7674ac048e0b9955cd17356a932876a52c45"
     }
   ]
 }

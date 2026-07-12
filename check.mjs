@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// actions/continuity-merge-guard/check.mjs
-// ContinuityOS Merge Guard — v1
+// actions/stategate/check.mjs
+// StateGate — v1
 // Self-contained: no external npm dependencies.
 
 import { writeFileSync, appendFileSync } from 'node:fs'
@@ -22,7 +22,7 @@ export async function acquirePullRequestDiff(input) {
   const headers = {
     accept: 'application/vnd.github+json',
     authorization: `Bearer ${token}`,
-    'user-agent': 'continuity-merge-guard',
+    'user-agent': 'stategate',
     'x-github-api-version': '2022-11-28',
   }
   try {
@@ -72,7 +72,7 @@ export async function acquireReviewEvidence(input) {
   const headers = {
     accept: 'application/vnd.github+json',
     authorization: `Bearer ${token}`,
-    'user-agent': 'continuity-merge-guard',
+    'user-agent': 'stategate',
     'x-github-api-version': '2022-11-28',
   }
   try {
@@ -147,7 +147,7 @@ async function main() {
   const proofPath = 'MERGE_GUARD_PROOF.json'
   writeFileSync(proofPath, JSON.stringify(proof, null, 2))
 
-  console.log(`ContinuityOS Merge Guard — result=${decision.result}`)
+  console.log(`StateGate — result=${decision.result}`)
   console.log(`proof_id=${decision.proof_id}`)
   console.log(`canonical_hash=${decision.canonical_hash}`)
   console.log(`diff_hash=${decision.diff_hash || 'null'}`)
@@ -185,7 +185,7 @@ async function main() {
   const githubStepSummary = process.env.GITHUB_STEP_SUMMARY
   if (githubStepSummary) {
     const lines = [
-      '### ContinuityOS Merge Guard',
+      '### StateGate',
       '',
       `result: \`${decision.result}\``,
       `proof_id: \`${decision.proof_id}\``,

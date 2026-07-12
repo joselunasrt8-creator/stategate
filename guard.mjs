@@ -1,5 +1,5 @@
-// actions/continuity-merge-guard/guard.mjs
-// Canonical Merge Guard validation surface. Every execution path (library,
+// actions/stategate/guard.mjs
+// Canonical StateGate validation surface. Every execution path (library,
 // CLI, and GitHub Action) must enter through validateMergeGuard() so the
 // validated object, proof object, and emitted decision share one canonical flow.
 
@@ -17,7 +17,7 @@ export const REVIEW_STATES = ['APPROVED', 'CHANGES_REQUESTED', 'DISMISSED', 'COM
 export const REVIEW_STATUS_DISABLED = 'not_required'
 
 const DEVELOPMENT_VALIDATOR = {
-  validator_name: 'continuity-merge-guard',
+  validator_name: 'stategate',
   validator_version: 'development',
   validator_commit: process.env.MERGE_GUARD_BUILD_COMMIT || 'unknown',
   validator_release_hash: null,

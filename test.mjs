@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// actions/continuity-merge-guard/test.mjs
-// Deterministic conformance test for the Merge Guard decision logic.
+// actions/stategate/test.mjs
+// Deterministic conformance test for the StateGate decision logic.
 // No network, no GitHub API — runs evaluate() directly against fixtures.
 
 import { readdirSync, readFileSync, writeFileSync, renameSync } from 'node:fs'
@@ -41,7 +41,7 @@ function recordFail(name, message) {
   console.error(` ${name} FAIL — ${message}`)
 }
 
-console.log('=== ContinuityOS Merge Guard — conformance test ===\n')
+console.log('=== StateGate — conformance test ===\n')
 for (const file of readdirSync(fixturesDir).sort()) {
   if (!file.endsWith('.json')) continue
   const fixture = JSON.parse(readFileSync(join(fixturesDir, file), 'utf8'))
@@ -213,11 +213,40 @@ assertCase('diff-binding-deterministic-replay', replayA.result === replayB.resul
 
 
 
+
+console.log('\n=== StateGate branding and compatibility contract tests ===\n')
+
+const actionMetadata = readFileSync(join(dir, 'action.yml'), 'utf8')
+assertCase('action-metadata-stategate-name', /^name:\s*['"]StateGate['"]\s*$/m.test(actionMetadata), 'action metadata exposes the StateGate Marketplace name')
+assertCase('action-metadata-stategate-description', /^description:\s*['"]Govern repository state transitions\. VALID \| NULL \| PROOF\.['"]\s*$/m.test(actionMetadata), 'action metadata exposes the canonical StateGate description')
+
+const readme = readFileSync(join(dir, 'README.md'), 'utf8')
+const consumerWorkflow = readFileSync(join(dir, 'examples/consumer-workflow.yml'), 'utf8')
+assertCase('documented-install-uses-stategate', readme.includes('uses: joselunasrt8-creator/stategate@v1') && consumerWorkflow.includes('uses: joselunasrt8-creator/stategate@v1'), 'documented install examples use the stategate repository')
+assertCase('migration-documents-legacy-action-reference', readme.includes('uses: joselunasrt8-creator/continuity-merge-guard@v1') && readme.includes('uses: joselunasrt8-creator/stategate@v1'), 'migration notes document the legacy action reference and canonical StateGate replacement')
+
+const publicFacingFiles = ['action.yml', 'README.md', 'docs/ARCHITECTURE.md', 'docs/FILE_MANIFEST.md', 'docs/UPGRADE_AND_ROLLBACK.md', 'docs/VERSIONING.md', 'docs/RELEASE_CHECKLIST.md', 'docs/EXTERNAL_INSTALL_VERIFICATION.md', 'examples/consumer-workflow.yml']
+const unintendedLegacyBranding = []
+for (const relative of publicFacingFiles) {
+  const text = readFileSync(join(dir, relative), 'utf8')
+  const lines = text.split('\n')
+  lines.forEach((line, index) => {
+    const allowedMigration = relative === 'README.md' && (line.includes('Migrating from Merge Guard') || line.includes('prior Merge Guard action') || line.includes('continuity-merge-guard'))
+    if (!allowedMigration && /ContinuityOS Merge Guard|\bMerge Guard\b|continuity-merge-guard/.test(line)) {
+      unintendedLegacyBranding.push(`${relative}:${index + 1}:${line.trim()}`)
+    }
+  })
+}
+assertCase('no-unintended-public-merge-guard-branding', unintendedLegacyBranding.length === 0, `legacy branding limited to migration notes (${unintendedLegacyBranding.join('; ') || 'none'})`)
+
+assertCase('compatibility-aliases-retained', typeof evaluate === 'function' && evaluate(baseInput).canonical_hash === validateMergeGuard(baseInput).canonical_hash, 'legacy evaluate alias remains compatible with validateMergeGuard')
+assertCase('legacy-proof-contract-retained', proof.proof_id.startsWith('MERGE_GUARD-') && proof.record_type === 'MERGE_GUARD_PROOF', 'legacy proof id prefix and record type remain stable for proof consumers')
+
 console.log('\n=== Release metadata and manifest tests ===\n')
 
 const identityA = validatorIdentity()
 const identityB = validatorIdentity()
-assertCase('validator-metadata-deterministic', JSON.stringify(identityA) === JSON.stringify(identityB) && identityA.validator_name === 'continuity-merge-guard' && identityA.validator_version === 'development' && identityA.proof_schema_version === '1.1.0', 'validator identity is deterministic and uses development metadata on the branch')
+assertCase('validator-metadata-deterministic', JSON.stringify(identityA) === JSON.stringify(identityB) && identityA.validator_name === 'stategate' && identityA.validator_version === 'development' && identityA.proof_schema_version === '1.1.0', 'validator identity is deterministic and uses development metadata on the branch')
 
 const proofWithValidator = proofFromDecision(canonicalEntry)
 assertCase('proof-includes-validator-identity', proofWithValidator.validator?.validator_version === identityA.validator_version && proofWithValidator.validator?.validator_release_hash === identityA.validator_release_hash, 'proof contains validator identity envelope')
@@ -287,7 +316,7 @@ const publishedReleaseMode = (() => {
   const originalManifest = readFileSync(join(dir, 'release/RELEASE_MANIFEST.json'), 'utf8')
   try {
     writeFileSync(join(dir, 'release/validator-metadata.json'), JSON.stringify({
-      validator_name: 'continuity-merge-guard',
+      validator_name: 'stategate',
       validator_version: '1.1.0',
       canonical_algorithm_version: 'merge-guard-v1',
       proof_schema_version: '1.1.0',
@@ -313,7 +342,7 @@ const publishedMissingTag = (() => {
   const originalManifest = readFileSync(join(dir, 'release/RELEASE_MANIFEST.json'), 'utf8')
   try {
     writeFileSync(join(dir, 'release/validator-metadata.json'), JSON.stringify({
-      validator_name: 'continuity-merge-guard',
+      validator_name: 'stategate',
       validator_version: '1.1.0',
       canonical_algorithm_version: 'merge-guard-v1',
       proof_schema_version: '1.1.0',
@@ -337,7 +366,7 @@ const publishedMismatchedTag = (() => {
   const originalManifest = readFileSync(join(dir, 'release/RELEASE_MANIFEST.json'), 'utf8')
   try {
     writeFileSync(join(dir, 'release/validator-metadata.json'), JSON.stringify({
-      validator_name: 'continuity-merge-guard',
+      validator_name: 'stategate',
       validator_version: '1.1.0',
       canonical_algorithm_version: 'merge-guard-v1',
       proof_schema_version: '1.1.0',

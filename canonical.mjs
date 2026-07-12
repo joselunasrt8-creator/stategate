@@ -1,4 +1,4 @@
-// actions/continuity-merge-guard/canonical.mjs
+// actions/stategate/canonical.mjs
 // Deterministic canonicalization + SHA-256, shared by check.mjs and
 // attribution.mjs. Algorithm is identical to conformance/pack-v1/harness.mjs
 // (same algorithm, proven deterministic) so this directory can be copied to any
@@ -31,7 +31,7 @@ export function canonicalize(v) {
   return JSON.stringify(n)
 }
 
-// Canonical PR diff normalization for Merge Guard proof binding.
+// Canonical PR diff normalization for StateGate proof binding.
 //
 // Rules:
 // - Input must be a non-empty string.

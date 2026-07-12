@@ -4,7 +4,7 @@ Status: release candidate prepared locally with deterministic release-content tr
 
 ## Invariants
 
-- `v1.0.0` remains the immutable historical pre-StateGate release and must continue resolving to `b26c7c29b1f52ac78f6112f9b1a2f1180b00a600`.
+- `v1.0.0` remains the immutable historical pre-StateGate release and must continue resolving to `bbc8ad7eb48645530542db85eb12a6c26b461404`.
 - Do not rewrite `release/manifests/v1.0.0.json`.
 - Do not rename `merge-guard-v1`, `MERGE_GUARD_PROOF.json`, `MERGE_GUARD_PROOF`, `MERGE_GUARD-`, or `MERGE_GUARD_*` compatibility surfaces.
 - Create immutable `v1.1.0` before moving the floating `v1` tag.
@@ -22,7 +22,7 @@ git log --oneline --decorate -5
 Verify the historical release remains unchanged:
 
 ```sh
-node -e 'const m=require("./release/manifests/v1.0.0.json"); if (m.source_commit !== "b26c7c29b1f52ac78f6112f9b1a2f1180b00a600") process.exit(1); console.log("v1.0.0 provenance ok")'
+node -e 'const m=require("./release/manifests/v1.0.0.json"); if (m.source_commit !== "bbc8ad7eb48645530542db85eb12a6c26b461404") process.exit(1); console.log("v1.0.0 provenance ok")'
 ```
 
 Generate the deterministic manifest and run the local release checks before tagging:
@@ -82,7 +82,7 @@ test "$(git rev-list -n 1 v1)" = "$(git rev-list -n 1 v1.1.0)"
 Confirm `v1.0.0` remains historical:
 
 ```sh
-test "$(git rev-list -n 1 v1.0.0)" = "b26c7c29b1f52ac78f6112f9b1a2f1180b00a600"
+test "$(git rev-list -n 1 v1.0.0)" = "bbc8ad7eb48645530542db85eb12a6c26b461404"
 ```
 
 Create the GitHub release from `v1.1.0` after the tag exists. Remote check: unverified.

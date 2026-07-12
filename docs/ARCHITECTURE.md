@@ -1,8 +1,8 @@
-# Merge Guard Architecture
+# StateGate Architecture
 
 ## Canonical enforcement flow
 
-Merge Guard has one load-bearing validation surface: `validateMergeGuard(input)` in `guard.mjs`. Library callers, the local CLI, and the composite GitHub Action all enter this function before any proof or status output is produced.
+StateGate has one load-bearing validation surface: `validateMergeGuard(input)` in `guard.mjs`. Library callers, the local CLI, and the composite GitHub Action all enter this function before any proof or status output is produced.
 
 ```text
 PR event / CLI environment / test fixture

@@ -1,5 +1,5 @@
-name: 'ContinuityOS Merge Guard'
-description: 'Verifies PR attribution and merge eligibility for AI-authored changes.'
+name: 'StateGate'
+description: 'Govern repository state transitions. VALID | NULL | PROOF.'
 
 inputs:
   repo:
@@ -160,7 +160,7 @@ runs:
         MERGE_GUARD_REVIEW_EVIDENCE: ${{ inputs.review-evidence }}
         MERGE_GUARD_EXPECTED_REVIEW_EVIDENCE_HASH: ${{ inputs.expected-review-evidence-hash }}
       run: node "${{ github.action_path }}/check.mjs"
-    - name: Upload merge guard proof
+    - name: Upload StateGate proof
       if: always()
       uses: actions/upload-artifact@v4
       with:

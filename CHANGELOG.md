@@ -10,13 +10,14 @@ Stable format: each release records semantic version, release date, source commi
 - Compatibility range: `>=1.0.0 <2.0.0`
 
 ### Added
+- StateGate v1.0.0 release preparation: first canonical release under the StateGate identity, with Marketplace metadata and install examples updated to `joselunasrt8-creator/stategate@v1`.
 - Validator proof envelope and release-governance tooling are staged for the next compatible release; this branch must not identify itself as the already-published `v1.0.0` implementation.
 
 ### Compatibility impact
 - Expected next release line: `v1.1.0` candidate because the proof envelope gains backward-compatible validator identity fields.
 
 ### Replay impact
-- Canonical decision hashes remain bound to the validated merge object and enabled policies; development proofs use `validator_release_hash: null`.
+- Canonical decision hashes remain bound to the validated state-transition object and enabled policies; development proofs use `validator_release_hash: null`.
 
 ## [1.0.0] - 2026-07-11
 
@@ -30,7 +31,7 @@ Stable format: each release records semantic version, release date, source commi
 - Initial release artifacts that existed at the immutable `v1.0.0` tag.
 
 ### Compatibility impact
-- Compatible within `>=1.0.0 <2.0.0`; no Merge Guard validation outcome changes are intended.
+- Compatible within `>=1.0.0 <2.0.0`; no StateGate validation outcome changes are intended.
 
 ### Replay impact
-- Historical canonical decision hashes remain bound to the validated merge object and enabled policies. New proofs add validator identity for implementation provenance.
+- Historical canonical decision hashes remain bound to the validated state-transition object and enabled policies. New proofs add validator identity for implementation provenance.

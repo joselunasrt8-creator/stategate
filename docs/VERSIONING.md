@@ -1,6 +1,6 @@
 # Versioning Policy
 
-ContinuityOS Merge Guard tracks three identifiers:
+StateGate tracks three identifiers:
 
 - `validator_version`: semantic version of the packaged validator implementation and distribution artifacts.
 - `canonical_algorithm_version`: identifier for canonical validation semantics and decision-hash inputs.

@@ -1,6 +1,6 @@
-// actions/continuity-merge-guard/attribution.mjs
-// ContinuityOS Agent Identity — Phase 1 (CI / Merge Guard plane).
-// Attribution is decision-critical identity evidence for Merge Guard. The
+// actions/stategate/attribution.mjs
+// StateGate Agent Identity — Phase 1 (CI / StateGate plane).
+// Attribution is decision-critical identity evidence for StateGate. The
 // classifier itself does not grant merge authority, but its normalized status,
 // classification, and evidence hash are bound into the canonical proof object
 // by guard.mjs so replayed proofs cannot silently swap attribution evidence.

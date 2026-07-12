@@ -1,4 +1,4 @@
-name: Merge Guard Consumer Verification
+name: StateGate Consumer Verification
 
 on:
   workflow_dispatch:
@@ -9,15 +9,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run exact pin VALID case
-        id: guard
-        uses: joselunasrt8-creator/continuity-merge-guard@v1.0.0
+        id: stategate
+        uses: joselunasrt8-creator/stategate@v1.0.0
         with:
           repo: owner/repo
-          pr_number: '1'
-          head_sha: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-          base_sha: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+          pr-number: '1'
+          head-sha: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          base-sha: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
           actor: human-user
-          pr_diff: |
+          pr-diff: |
             diff --git a/README.md b/README.md
             index 1111111..2222222 100644
             --- a/README.md
@@ -35,24 +35,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run major pin NULL case
-        id: guard
+        id: stategate
         continue-on-error: true
-        uses: joselunasrt8-creator/continuity-merge-guard@v1
+        uses: joselunasrt8-creator/stategate@v1
         with:
           repo: owner/repo
-          pr_number: '2'
-          head_sha: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-          base_sha: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+          pr-number: '2'
+          head-sha: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          base-sha: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
           actor: human-user
-          pr_diff: ''
+          pr-diff: ''
       - uses: actions/upload-artifact@v4
         with:
           name: major-pin-null-proof
           path: MERGE_GUARD_PROOF.json
       - name: Document outputs
         run: |
-          echo "result=${{ steps.guard.outputs.result }}"
-          echo "proof_id=${{ steps.guard.outputs.proof_id }}"
-          echo "proof_hash=${{ steps.guard.outputs.proof_hash }}"
-          echo "diff_hash=${{ steps.guard.outputs.diff_hash }}"
-          echo "null_reasons=${{ steps.guard.outputs.null_reasons }}"
+          echo "result=${{ steps.stategate.outputs.result }}"
+          echo "proof_id=${{ steps.stategate.outputs.proof_id }}"
+          echo "proof_hash=${{ steps.stategate.outputs.proof_hash }}"
+          echo "diff_hash=${{ steps.stategate.outputs.diff_hash }}"
+          echo "null_reasons=${{ steps.stategate.outputs.null_reasons }}"

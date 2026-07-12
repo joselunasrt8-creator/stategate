@@ -6,7 +6,7 @@ VALID | NULL | PROOF
 
 StateGate validates whether the exact proposed pull-request mutation remains authorized, policy-compliant, current, and eligible to become canonical repository state.
 
-![StateGate](7894E300-3D37-45CC-BDA5-3B6C6D90E118.png)
+![Continufy StateGate Marketplace listing](7894E300-3D37-45CC-BDA5-3B6C6D90E118.png)
 
 ## Scope
 
@@ -91,7 +91,7 @@ Choose the pinning form that matches your reproducibility requirement:
 → immutable validator source
 ```
 
-The Marketplace convenience channel uses the moving `v1` tag:
+The Continufy StateGate Marketplace convenience channel uses the moving `v1` tag:
 
 ```yaml
 name: StateGate
@@ -279,7 +279,13 @@ See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the canonical enforcement
 
 ## Release Status
 
-StateGate is available through the GitHub Marketplace.
+StateGate is available through the GitHub Marketplace as `Continufy StateGate`.
+
+Repository branding remains:
+
+- Company: Continufy
+- Product: StateGate
+- Marketplace Listing: Continufy StateGate
 
 Current release channels:
 

@@ -49,8 +49,11 @@ export function buildReleaseManifest() {
     return { path, sha256: sha256(readFileSync(path)) }
   })
   const canonical = JSON.stringify({ files })
+  const metadata = JSON.parse(readFileSync('release/validator-metadata.json', 'utf8'))
+  const release = metadata.validator_version === 'development' ? 'development' : `v${metadata.validator_version}`
   return {
     manifest_version: '1.0.0',
+    release,
     source_commit: sourceCommit(),
     release_hash: `sha256:${sha256(canonical)}`,
     files,

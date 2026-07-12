@@ -28,12 +28,17 @@ function tagTarget(name) {
 for (const field of ['validator_name', 'validator_version', 'canonical_algorithm_version', 'proof_schema_version', 'compatibility_range']) requireString(metadata, field, 'release/validator-metadata.json')
 if (metadata.validator_name !== 'stategate') fail('unexpected validator_name')
 if (published && metadata.validator_version === 'development') fail('published verification cannot use development metadata')
-if (!published && metadata.validator_version !== 'development') fail('development verification requires development metadata; use --published for release metadata')
 if (published && tag !== `v${metadata.validator_version}`) fail(`validator_version ${metadata.validator_version} does not match tag ${tag}`)
 
 const changelog = existsSync('CHANGELOG.md') ? readFileSync('CHANGELOG.md', 'utf8') : fail('missing CHANGELOG.md')
 if (published && !changelog.includes(`## [${metadata.validator_version}]`)) fail(`CHANGELOG.md lacks ${metadata.validator_version}`)
-if (!published && !changelog.includes('## [Unreleased]')) fail('CHANGELOG.md lacks Unreleased development section')
+if (!published && metadata.validator_version === 'development' && !changelog.includes('## [Unreleased]')) fail('CHANGELOG.md lacks Unreleased development section')
+if (!published && metadata.validator_version !== 'development' && !changelog.includes(`## [${metadata.validator_version}]`)) fail(`CHANGELOG.md lacks ${metadata.validator_version}`)
+
+const archivedV100 = readJson('release/manifests/v1.0.0.json')
+if (archivedV100.release !== 'v1.0.0' || archivedV100.source_commit !== 'b26c7c29b1f52ac78f6112f9b1a2f1180b00a600') fail('v1.0.0 provenance changed')
+if (metadata.canonical_algorithm_version !== 'merge-guard-v1') fail('canonical_algorithm_version changed')
+if (metadata.compatibility_range !== '>=1.0.0 <2.0.0') fail('compatibility_range changed')
 
 const manifest = readJson('release/RELEASE_MANIFEST.json')
 if (!Array.isArray(manifest.files) || manifest.files.length === 0) fail('manifest has no files')
@@ -63,4 +68,4 @@ if (majorTag || expectedMajorTarget) {
   if (!majorTag || !expectedMajorTarget) fail('major tag verification requires --major-tag and --expected-major-target')
   if (tagTarget(majorTag) !== tagTarget(expectedMajorTarget)) fail(`${majorTag} does not target ${expectedMajorTarget}`)
 }
-console.log(`release verification passed for ${published ? tag : 'development'} ${manifest.release_hash}`)
+console.log(`release verification passed for ${published ? tag : metadata.validator_version} ${manifest.release_hash}`)

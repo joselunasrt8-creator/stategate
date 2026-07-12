@@ -8,8 +8,8 @@ Stable format: each release records semantic version, release date, source commi
 
 ## [1.1.0] - 2026-07-12
 
-- Source commit: to be filled by the exact immutable `v1.1.0` tag target during maintainer release finalization.
-- Release manifest: `release/RELEASE_MANIFEST.json`; archived copy `release/manifests/v1.1.0.json` must be created only after the exact release commit is known.
+- Source tree: recorded in `release/RELEASE_MANIFEST.json` and `release/manifests/v1.1.0.json` as the deterministic release-content tree.
+- Release manifest: `release/RELEASE_MANIFEST.json`; archived copy `release/manifests/v1.1.0.json` is committed with the finalized release content.
 - Canonical algorithm version: `merge-guard-v1`
 - Proof schema version: `1.1.0`
 - Compatibility range: `>=1.0.0 <2.0.0`
@@ -18,7 +18,7 @@ Stable format: each release records semantic version, release date, source commi
 - First exact release under the StateGate identity with canonical validator metadata finalized as `validator_name: stategate` and `validator_version: 1.1.0`.
 - Canonical PR diff binding and review approval binding in deterministic proof output, preserving the validated object as the executed object.
 - Deterministic proof and validator identity fields for release provenance while preserving `MERGE_GUARD_PROOF.json`, `MERGE_GUARD_PROOF`, `MERGE_GUARD-`, and `MERGE_GUARD_*` compatibility identifiers.
-- Release manifests and verification tooling for deterministic file hashes, published tag/source matching, changelog/version matching, runtime hash checking, and v1.0.0 provenance checks.
+- Release manifests and verification tooling for deterministic file hashes, published tag/content-tree matching, changelog/version matching, runtime hash checking, and v1.0.0 provenance checks.
 - Marketplace identity finalized as `Continufy StateGate` without claiming that Marketplace rendering has been observed for this release.
 - Deterministic consumer VALID and NULL fixtures for replay of accepted and rejected consumer workflow states.
 - Post-release verification and rollback procedures for exact `v1.1.0`, floating `v1`, Marketplace rendering, consumer workflows, and rollback of `v1` without moving `v1.1.0`.

@@ -1,6 +1,6 @@
 # StateGate v1.1.0 Release Handoff
 
-Status: release candidate prepared locally; remote tag, Marketplace, and consumer checks remain unverified until the maintainer performs them.
+Status: release candidate prepared locally with deterministic release-content tree binding; remote tag, Marketplace, and consumer checks remain unverified until the maintainer performs them.
 
 ## Invariants
 
@@ -25,7 +25,7 @@ Verify the historical release remains unchanged:
 node -e 'const m=require("./release/manifests/v1.0.0.json"); if (m.source_commit !== "b26c7c29b1f52ac78f6112f9b1a2f1180b00a600") process.exit(1); console.log("v1.0.0 provenance ok")'
 ```
 
-Run the local release checks before tagging:
+Generate the deterministic manifest and run the local release checks before tagging:
 
 ```sh
 for f in *.mjs scripts/*.mjs; do node --check "$f"; done
@@ -40,13 +40,14 @@ Create the final release commit if these files changed during finalization:
 
 ```sh
 git status --short
-git add CHANGELOG.md release/validator-metadata.json release/RELEASE_MANIFEST.json scripts/build-release-manifest.mjs scripts/verify-release.mjs test.mjs docs/V1_1_0_RELEASE_HANDOFF.md
+git add CHANGELOG.md release/validator-metadata.json release/RELEASE_MANIFEST.json release/manifests/v1.1.0.json scripts/build-release-manifest.mjs scripts/verify-release.mjs test.mjs docs/V1_1_0_RELEASE_HANDOFF.md
 git commit -m "Prepare StateGate v1.1.0 release"
 ```
 
-Record the exact candidate commit:
+Confirm the committed release-content tree equals the manifest source tree, then record the exact candidate commit:
 
 ```sh
+node scripts/verify-release.mjs
 release_commit=$(git rev-parse HEAD)
 printf '%s\n' "$release_commit"
 ```
@@ -97,6 +98,6 @@ git tag -f -a v1 <prior-good-commit> -m "Rollback StateGate v1 floating tag"
 git push origin refs/tags/v1 --force
 ```
 
-## Circularity note
+## Release identity model
 
-A committed file cannot contain the SHA of the same Git commit without a hash fixed point. The release verifier therefore validates the working release manifest and, in `--published` mode, requires the manifest `source_commit` to match the existing exact tag target. Do not insert a guessed commit SHA.
+A committed file cannot contain the SHA of the same Git commit without a hash fixed point. The release manifests therefore do not store a v1.1.0 `source_commit`. They store `source_tree`, the deterministic Git tree for the release payload files listed in the manifest. The exact immutable tag supplies the release commit identity, and published verification resolves the tag target and requires its release-content tree to match `manifest.source_tree`.

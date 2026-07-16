@@ -87,7 +87,9 @@ StateGate operates at a different boundary. Rather than governing the merge work
 
 <div align="center">
 
-![Doesn't GitHub Already Solve This?](A2C27EE7-BEE4-4584-9D59-6485C2359151.png)
+<img src="./A2C27EE7-BEE4-4584-9D59-6485C2359151.png"
+     alt="GitHub vs StateGate"
+     width="100%">
 
 </div>
 
@@ -101,7 +103,9 @@ Only validated state transitions become eligible to mutate repository state.
 
 <div align="center">
 
-![Every Merge Changes Repository State](EB771D3D-B1B7-4255-92B6-9E80DA81C043.png)
+<img src="./EB771D3D-B1B7-4255-92B6-9E80DA81C043.png"
+     alt="Every Merge Changes Repository State"
+     width="100%">
 
 </div>
 

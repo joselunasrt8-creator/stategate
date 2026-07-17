@@ -1,10 +1,8 @@
 <div align="center">
-
 <img
   src="./assets/images/01-hero.jpeg"
-  alt="StateGate — Deterministic validation for repository state transitions"
+  alt="StateGate — deterministic validation for repository state transitions"
   width="100%">
-
 </div>
 
 # StateGate
@@ -97,24 +95,36 @@ A pull request proposes a new repository state. Before that transition is allowe
 Only validated state transitions become eligible to mutate repository state.
 
 ## Every Merge Is a Repository State Transition
-<p align="center">
-  <img src="./assets/images/02-state-transition.png" width="100%">
-</p>
+<div align="center">
+<img
+  src="./assets/images/02-state-transition.png"
+  alt="Every merge is a repository state transition validated by StateGate"
+  width="100%">
+</div>
 
 ## Deterministic Validation Pipeline
-<p align="center">
-  <img src="./assets/images/03-validation-pipeline.jpeg" width="100%">
-</p>
+<div align="center">
+<img
+  src="./assets/images/03-validation-pipeline.jpeg"
+  alt="StateGate deterministic validation pipeline"
+  width="100%">
+</div>
 
 ## When Does a Transition Become Eligible?
-<p align="center">
-  <img src="./assets/images/04-transition-eligibility.jpeg" width="100%">
-</p>
+<div align="center">
+<img
+  src="./assets/images/04-transition-eligibility.jpeg"
+  alt="StateGate eligibility rules for repository state transitions"
+  width="100%">
+</div>
 
 ## What Does StateGate Produce?
-<p align="center">
-  <img src="./assets/images/05-validation-evidence.jpeg" width="100%">
-</p>
+<div align="center">
+<img
+  src="./assets/images/05-validation-evidence.jpeg"
+  alt="StateGate deterministic, verifiable, and replayable validation evidence"
+  width="100%">
+</div>
 
 ## Scope
 

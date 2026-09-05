@@ -1,0 +1,81 @@
+{
+  "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+  "independent_participant": false,
+  "issue_64_admissible": false,
+  "artifact_type": "CONTROLLED_REHEARSAL_PROOF",
+  "proof": {
+    "proof_id": "MERGE_GUARD-6702-aaaaaaaa",
+    "repo": "continufy-controlled/stategate-rehearsal",
+    "validator": {
+      "validator_name": "stategate",
+      "validator_version": "1.1.1",
+      "validator_commit": "unknown",
+      "validator_release_hash": "sha256:2f660e02b8774949343a628665835d347bb0b9ac9165b4eb8bcf7d168f863fc5",
+      "canonical_algorithm_version": "merge-guard-v1",
+      "proof_schema_version": "1.1.0",
+      "compatibility_range": ">=1.0.0 <2.0.0"
+    },
+    "canonical_payload": {
+      "repo": "continufy-controlled/stategate-rehearsal",
+      "pr_number": "6702",
+      "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "base_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "actor": "continufy-evaluator",
+      "diff_hash": null,
+      "diff_source": "issue_67_synthetic_fixture",
+      "author_kind": "unknown",
+      "require_agent_authored": "false",
+      "attribution_status": "identity_missing",
+      "attribution_classification": "UNKNOWN",
+      "attribution_evidence_hash": "301bf7196d1d4eebbcfba623c69ed19b6071938d2c8f83001f0e85d8e8bd48eb",
+      "review_policy": {
+        "review_required": true,
+        "minimum_approvals": 1
+      },
+      "review_result": {
+        "review_status": "approved",
+        "approval_count": 1,
+        "review_head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "review_evidence_hash": "sha256:efcda36b001e9cf2fae2f232ed14f2fbf6232faa33030c155ee37cc314062688"
+      }
+    },
+    "canonical_hash": "4265b700a4a13b694bc05040aebcade93bc9d5e9e8e50c46ff269a596a501b2b",
+    "diff_hash": null,
+    "diff_source": "issue_67_synthetic_fixture",
+    "diff_canonicalization": "line_endings_lf_terminal_lf_preserve_order_and_patch_text",
+    "result": "NULL",
+    "missing_fields": [],
+    "invalid_fields": [],
+    "author_kind": "unknown",
+    "require_agent_authored": "false",
+    "agent_author_required": false,
+    "null_reasons": [
+      "DIFF_MALFORMED"
+    ],
+    "actor_attribution": {
+      "actor_kind": "unknown",
+      "actor_id": "continufy-evaluator",
+      "operator_id": null,
+      "attribution_source": "pr_metadata",
+      "confidence": "observed",
+      "evidence": [
+        {
+          "signal_id": "github_actor_or_bot_account",
+          "tier": "supporting",
+          "value": "continufy-evaluator",
+          "declares": null
+        }
+      ]
+    },
+    "attribution_classification": "UNKNOWN",
+    "attribution_status": "identity_missing",
+    "attribution_evidence_hash": "301bf7196d1d4eebbcfba623c69ed19b6071938d2c8f83001f0e85d8e8bd48eb",
+    "review_required": true,
+    "minimum_approvals": 1,
+    "approval_count": 1,
+    "review_evidence_hash": "sha256:efcda36b001e9cf2fae2f232ed14f2fbf6232faa33030c155ee37cc314062688",
+    "review_head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "review_status": "approved",
+    "record_type": "MERGE_GUARD_PROOF"
+  }
+}

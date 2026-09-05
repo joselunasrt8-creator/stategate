@@ -1,0 +1,61 @@
+name: Rehearsal Validation
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/validate-economic-rehearsal.mjs'
+      - 'rehearsal/issue-67/**'
+      - 'test.mjs'
+      - '.github/workflows/rehearsal-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configure test-only Git identity
+        run: |
+          git config --local user.name "StateGate CI"
+          git config --local user.email "stategate-ci@users.noreply.github.com"
+
+      - name: Run StateGate conformance suite
+        run: node test.mjs
+
+      - name: Verify frozen rehearsal artifacts
+        run: node scripts/validate-economic-rehearsal.mjs
+
+      - name: Verify retained SHA-256 hashes
+        run: |
+          cd rehearsal/issue-67
+          sha256sum --check SHA256SUMS
+
+      - name: Verify external-adoption positive fixtures
+        run: |
+          node scripts/validate-external-adoption-evidence.mjs \
+            fixtures/external-adoption/valid-placeholder.json \
+            fixtures/external-adoption/valid-installation-only.json \
+            fixtures/external-adoption/valid-repeat-use.json \
+            fixtures/external-adoption/valid-independent-dependency.json
+
+      - name: Verify release artifacts from frozen source tree
+        run: git archive --format=tar "$STATEGATE_SHA" | tar -xO test.mjs | sha256sum
+        env:
+          STATEGATE_SHA: f98679d48e59c2681e7caac163ced0e47926e8cf
+
+      - name: Verify whitespace
+        run: git diff --check origin/main...HEAD

@@ -1,0 +1,41 @@
+{
+  "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+  "independent_participant": false,
+  "issue_64_admissible": false,
+  "rehearsal_id": "issue-67-2026-09-05",
+  "governing_protocol": "docs/ECONOMIC_VALUE_PILOT.md",
+  "starting_commit_sha": "f98679d48e59c2681e7caac163ced0e47926e8cf",
+  "stategate_full_sha": "f98679d48e59c2681e7caac163ced0e47926e8cf",
+  "controller": "Continufy evaluator-controlled synthetic surface",
+  "repository": "local://stategate/rehearsal/issue-67",
+  "frozen_at": "2026-09-05T00:00:00Z",
+  "phase_order": [
+    "baseline",
+    "baseline_freeze",
+    "controlled_checks",
+    "intervention",
+    "economics",
+    "retention",
+    "replay",
+    "determination"
+  ],
+  "native_controls": [
+    "protected-target simulation",
+    "one exact-head approval",
+    "required StateGate result simulation"
+  ],
+  "native_controls_manifest_hash": "sha256:400f907d3a4b2ed0551744ad4cd51ba27447d0f77dbc7a9b476d82e0428afaef",
+  "workflow_hash": "sha256:e57b69983b20fb35bba1704f139592cb18aac477403902601e1f19ac66119f46",
+  "export_script_hash": "sha256:82ec3509921e4ef6dcd5d235b75ed8fb1352993c7fd25813ca66454fd947271c",
+  "materiality_threshold_currency": "USD",
+  "materiality_threshold_value": null,
+  "materiality_threshold_basis": "UNSET_NON_EVIDENTIARY_REHEARSAL_NO_PARTICIPANT_THRESHOLD",
+  "materiality_threshold_frozen_at": null,
+  "disqualification": [
+    "synthetic records",
+    "evaluator controlled",
+    "same-owner test surface",
+    "fewer than 8 eligible units per phase",
+    "no participant materiality threshold"
+  ]
+}

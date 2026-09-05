@@ -1,0 +1,208 @@
+[
+  {
+    "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+    "independent_participant": false,
+    "issue_64_admissible": false,
+    "id": "stale_review_not_bound_to_head",
+    "input": {
+      "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "review_head_sha": "cccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected_behavior": "NULL with REVIEW_HEAD_SHA_MISMATCH",
+    "actual_behavior": {
+      "result": "NULL",
+      "null_reasons": [
+        "REVIEW_HEAD_SHA_MISMATCH"
+      ]
+    },
+    "evidence_proof_identity": "sha256:81874c0bf97f0722b351b4b2c1d8a926687af752dad61e3de82adcbbd320b5f0",
+    "outcome": "PASS",
+    "note": ""
+  },
+  {
+    "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+    "independent_participant": false,
+    "issue_64_admissible": false,
+    "id": "head_changed_after_approval",
+    "input": {
+      "current_head_sha": "dddddddddddddddddddddddddddddddddddddddd",
+      "approved_commit_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "expected_behavior": "NULL with REVIEW_STALE",
+    "actual_behavior": {
+      "result": "NULL",
+      "null_reasons": [
+        "REVIEW_STALE",
+        "REVIEW_APPROVAL_REQUIRED",
+        "INSUFFICIENT_APPROVALS"
+      ]
+    },
+    "evidence_proof_identity": "sha256:5c5170a1e8705267019bd350e3fc980cd43c2c75ecdb3581faba450854804f4d",
+    "outcome": "PASS",
+    "note": ""
+  },
+  {
+    "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+    "independent_participant": false,
+    "issue_64_admissible": false,
+    "id": "missing_required_evidence",
+    "input": {
+      "required": "proof_sha256",
+      "supplied": ""
+    },
+    "expected_behavior": "unit is evidence-incomplete; blank remains blank",
+    "actual_behavior": {
+      "evidence_complete": false,
+      "retained_value": ""
+    },
+    "evidence_proof_identity": "sha256:unavailable-by-design",
+    "outcome": "PASS",
+    "note": ""
+  },
+  {
+    "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+    "independent_participant": false,
+    "issue_64_admissible": false,
+    "id": "missing_unobservable_cost",
+    "input": {
+      "observed_rework_or_incident_cost": ""
+    },
+    "expected_behavior": "UNOBSERVED; do not infer zero or benefit",
+    "actual_behavior": {
+      "economic_status": "UNOBSERVED",
+      "retained_value": ""
+    },
+    "evidence_proof_identity": "sha256:unavailable-by-design",
+    "outcome": "PASS",
+    "note": ""
+  },
+  {
+    "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+    "independent_participant": false,
+    "issue_64_admissible": false,
+    "id": "expected_bounded_null",
+    "input": {
+      "fixture": "malformed diff"
+    },
+    "expected_behavior": "NULL bounded by DIFF_MALFORMED",
+    "actual_behavior": {
+      "result": "NULL",
+      "null_reasons": [
+        "DIFF_MALFORMED"
+      ]
+    },
+    "evidence_proof_identity": "sha256:ff271bf26bdfba49f278dd945221e29e052db90d3f034e47e05cac647eab8af7",
+    "outcome": "PASS",
+    "note": ""
+  },
+  {
+    "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+    "independent_participant": false,
+    "issue_64_admissible": false,
+    "id": "incorrect_stategate_pin",
+    "input": {
+      "uses": "joselunasrt8-creator/stategate@v1"
+    },
+    "expected_behavior": "reject any ref that is not the frozen 40-character SHA",
+    "actual_behavior": {
+      "accepted": false,
+      "reason": "STATEGATE_SHA_NOT_EXACT_FROZEN_SHA"
+    },
+    "evidence_proof_identity": "sha256:2d2b4e4dfd693036eae3acbc6c5345659b5752196def7225829ab86f76780680",
+    "outcome": "PASS",
+    "note": ""
+  },
+  {
+    "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+    "independent_participant": false,
+    "issue_64_admissible": false,
+    "id": "protocol_deviation_after_baseline_freeze",
+    "input": {
+      "frozen_workflow_hash": "sha256:1111",
+      "observed_workflow_hash": "sha256:2222"
+    },
+    "expected_behavior": "stop; do not pool phases",
+    "actual_behavior": {
+      "stopped": true,
+      "reason": "PROTOCOL_DEVIATION"
+    },
+    "evidence_proof_identity": "sha256:808e72bbf633ffc7c99ce29500215b5119d62276edf1d3cd2df495640e035981",
+    "outcome": "PASS",
+    "note": ""
+  },
+  {
+    "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+    "independent_participant": false,
+    "issue_64_admissible": false,
+    "id": "excluded_pr_unit",
+    "input": {
+      "draft": true,
+      "phase": "intervention"
+    },
+    "expected_behavior": "excluded explicitly before economics",
+    "actual_behavior": {
+      "eligible": false,
+      "exclusion_reason": "CONTROLLED_CHECK_PR"
+    },
+    "evidence_proof_identity": "sha256:6a7c42ba244bd4451e5e88ac8d59dbfdd2a6b1bb44d9e39de2da6cd4cd772474",
+    "outcome": "PASS",
+    "note": ""
+  },
+  {
+    "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+    "independent_participant": false,
+    "issue_64_admissible": false,
+    "id": "incomplete_retention_record",
+    "input": {
+      "required_hash": "",
+      "retrieval_date": ""
+    },
+    "expected_behavior": "retention validation fails",
+    "actual_behavior": {
+      "retention_complete": false,
+      "reason": "INCOMPLETE_RETENTION_RECORD"
+    },
+    "evidence_proof_identity": "sha256:unavailable-by-design",
+    "outcome": "PASS",
+    "note": ""
+  },
+  {
+    "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+    "independent_participant": false,
+    "issue_64_admissible": false,
+    "id": "replay_proof_hash_mismatch",
+    "input": {
+      "expected_proof_hash": "a4605c2714816bd1e720e2d241ab7946234e52cade25938a45e726f2759cf003",
+      "replay_pr_number": "6705"
+    },
+    "expected_behavior": "NULL with PROOF_HASH_MISMATCH",
+    "actual_behavior": {
+      "result": "NULL",
+      "null_reasons": [
+        "PROOF_HASH_MISMATCH"
+      ]
+    },
+    "evidence_proof_identity": "sha256:2ac070d3ce6239ced4d2ed2799ff3871a57d939d64b87962ffbfed50f042c60b",
+    "outcome": "PASS",
+    "note": ""
+  },
+  {
+    "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+    "independent_participant": false,
+    "issue_64_admissible": false,
+    "id": "candidate_false_block",
+    "input": {
+      "candidate_report": "StateGate incorrectly blocked an otherwise eligible change",
+      "replay_input": "controlled VALID input"
+    },
+    "expected_behavior": "candidate is not counted unless replay produces an incorrect NULL",
+    "actual_behavior": {
+      "replay_result": "VALID",
+      "confirmed_false_block": false,
+      "false_block_minutes": 0
+    },
+    "evidence_proof_identity": "sha256:c41a2032e7afe828a9f155be03a6c61c92e1da19e50813a5e1b14d363eefb4e4",
+    "outcome": "PASS",
+    "note": "Candidate rejected; no participant-confirmed false block was manufactured."
+  }
+]

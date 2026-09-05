@@ -278,7 +278,12 @@ function runGit(args) {
   return spawnSync('git', args, { encoding: 'utf8' })
 }
 
+function runGitWithInput(args, input) {
+  return spawnSync('git', args, { encoding: 'utf8', input })
+}
+
 const manifestBefore = readFileSync(join(dir, 'release/RELEASE_MANIFEST.json'), 'utf8')
+const archivedManifestBefore = readFileSync(join(dir, 'release/manifests/v1.1.1.json'), 'utf8')
 const buildOnce = runNode(['scripts/build-release-manifest.mjs'])
 const manifestAfterFirst = readFileSync(join(dir, 'release/RELEASE_MANIFEST.json'), 'utf8')
 const buildTwice = runNode(['scripts/build-release-manifest.mjs'])
@@ -395,7 +400,13 @@ const publishedMismatchedTag = (() => {
     writeFileSync(join(dir, 'CHANGELOG.md'), originalChangelog.replace('## [Unreleased]', '## [Unreleased]\n\n## [1.1.1] - 2026-07-11'))
     const build = runNode(['scripts/build-release-manifest.mjs'])
     if (build.status !== 0) return build
-    runGit(['tag', '-f', 'v1.1.1', 'HEAD~1'])
+    const blob = runGit(['rev-parse', 'HEAD:README.md']).stdout.trim()
+    if (!blob) return { status: 1 }
+    const mismatchedTree = runGitWithInput(['mktree'], `100644 blob ${blob}\tREHEARSAL_TREE_MISMATCH\n`).stdout.trim()
+    if (!mismatchedTree) return { status: 1 }
+    const mismatchedCommit = runGit(['commit-tree', mismatchedTree, '-p', 'HEAD', '-m', 'mismatched release tree test']).stdout.trim()
+    if (!mismatchedCommit) return { status: 1 }
+    runGit(['tag', '-f', 'v1.1.1', mismatchedCommit])
     return runNode(['scripts/verify-release.mjs', '--published', '--tag=v1.1.1'])
   } finally {
     runGit(['tag', '-d', 'v1.1.1'])
@@ -418,6 +429,7 @@ const changelogMismatch = withRestoredFile('CHANGELOG.md', original => original.
 assertCase('release-verification-detects-changelog-mismatch', changelogMismatch.status !== 0, 'changelog/version mismatch fails release verification')
 
 writeFileSync(join(dir, 'release/RELEASE_MANIFEST.json'), manifestBefore)
+writeFileSync(join(dir, 'release/manifests/v1.1.1.json'), archivedManifestBefore)
 
 const total = passCount + failCount
 console.log(`\nTotal: ${total} | PASS: ${passCount} | FAIL: ${failCount}`)

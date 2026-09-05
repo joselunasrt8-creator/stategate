@@ -1,0 +1,26 @@
+{
+  "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+  "independent_participant": false,
+  "issue_64_admissible": false,
+  "currency": "USD",
+  "materiality_threshold_value": null,
+  "label": "NON_EVIDENTIARY_REHEARSAL",
+  "eligible_baseline_units": 3,
+  "eligible_intervention_units": 3,
+  "inputs": {
+    "labor_cost_saved": 3.5,
+    "observed_rework_or_incident_cost_avoided": 0,
+    "setup_cost": 2.5,
+    "maintenance_cost": 0.5,
+    "added_review_cost": 0,
+    "CI_cost": 0.12,
+    "false_block_cost": 0,
+    "merge_delay_cost": 0.75
+  },
+  "unobserved": [
+    "baseline-3-v1.observed_rework_or_incident_cost",
+    "intervention-3-v1.observed_rework_or_incident_cost"
+  ],
+  "net_observed_value": -0.37,
+  "claim_boundary": "Cannot support a StateGate external, independent, economic, commercial, or Issue #64 value claim regardless of sign."
+}

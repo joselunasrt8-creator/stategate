@@ -1,0 +1,115 @@
+{
+  "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+  "independent_participant": false,
+  "issue_64_admissible": false,
+  "rehearsal_manifest_identity": "sha256:5e08780437a1c7daebea622b6af04705dcf65756bf5ed14bb84042764a1bb7af",
+  "baseline_rehearsal_unit_count": 3,
+  "intervention_rehearsal_unit_count": 3,
+  "controlled_valid": {
+    "result": "VALID",
+    "proof_identity": "sha256:c41a2032e7afe828a9f155be03a6c61c92e1da19e50813a5e1b14d363eefb4e4"
+  },
+  "controlled_null": {
+    "result": "NULL",
+    "bounded_reason": "DIFF_MALFORMED",
+    "proof_identity": "sha256:ff271bf26bdfba49f278dd945221e29e052db90d3f034e47e05cac647eab8af7"
+  },
+  "required_failure_cases": [
+    {
+      "id": "stale_review_not_bound_to_head",
+      "outcome": "PASS"
+    },
+    {
+      "id": "head_changed_after_approval",
+      "outcome": "PASS"
+    },
+    {
+      "id": "missing_required_evidence",
+      "outcome": "PASS"
+    },
+    {
+      "id": "missing_unobservable_cost",
+      "outcome": "PASS"
+    },
+    {
+      "id": "expected_bounded_null",
+      "outcome": "PASS"
+    },
+    {
+      "id": "incorrect_stategate_pin",
+      "outcome": "PASS"
+    },
+    {
+      "id": "protocol_deviation_after_baseline_freeze",
+      "outcome": "PASS"
+    },
+    {
+      "id": "excluded_pr_unit",
+      "outcome": "PASS"
+    },
+    {
+      "id": "incomplete_retention_record",
+      "outcome": "PASS"
+    },
+    {
+      "id": "replay_proof_hash_mismatch",
+      "outcome": "PASS"
+    },
+    {
+      "id": "candidate_false_block",
+      "outcome": "PASS"
+    }
+  ],
+  "economic_output": {
+    "evidence_class": "NON_EVIDENTIARY_REHEARSAL",
+    "independent_participant": false,
+    "issue_64_admissible": false,
+    "currency": "USD",
+    "materiality_threshold_value": null,
+    "label": "NON_EVIDENTIARY_REHEARSAL",
+    "eligible_baseline_units": 3,
+    "eligible_intervention_units": 3,
+    "inputs": {
+      "labor_cost_saved": 3.5,
+      "observed_rework_or_incident_cost_avoided": 0,
+      "setup_cost": 2.5,
+      "maintenance_cost": 0.5,
+      "added_review_cost": 0,
+      "CI_cost": 0.12,
+      "false_block_cost": 0,
+      "merge_delay_cost": 0.75
+    },
+    "unobserved": [
+      "baseline-3-v1.observed_rework_or_incident_cost",
+      "intervention-3-v1.observed_rework_or_incident_cost"
+    ],
+    "net_observed_value": -0.37,
+    "claim_boundary": "Cannot support a StateGate external, independent, economic, commercial, or Issue #64 value claim regardless of sign."
+  },
+  "defects_discovered": [
+    {
+      "id": "RELEASE_PAYLOAD_MUTATED_BY_REHEARSAL_TEST_FIX",
+      "observation": "The rehearsal changed test.mjs even though test.mjs is included in the immutable v1.1.1 release manifest; the final standalone release verification therefore rejected the branch.",
+      "preserved_result": "node scripts/verify-release.mjs: runtime file hash differs: test.mjs"
+    }
+  ],
+  "corrections_made": [
+    {
+      "id": "RELEASE_PAYLOAD_MUTATED_BY_REHEARSAL_TEST_FIX",
+      "correction": "Restore test.mjs byte-for-byte from the frozen starting commit and rely on CI checkout/history/identity setup for the existing Git topology fixtures.",
+      "scope": "test.mjs restoration only; no StateGate runtime, protocol, or historical release provenance changed",
+      "rerun_expected": "all conformance and standalone release verification checks PASS"
+    }
+  ],
+  "limitations": [
+    "No independent participant or participant-controlled repository.",
+    "Synthetic/evaluator-controlled records are not naturally occurring PRs.",
+    "Three eligible units per phase; Issue #64 requires at least eight.",
+    "No participant-defined materiality threshold.",
+    "No GitHub-hosted workflow, billing export, or external run URL was exercised."
+  ],
+  "issue_64_qualifying_record_count": 0,
+  "replay_result": "PASS",
+  "determination": "REHEARSAL_READY_WITH_LIMITATIONS",
+  "conclusion_boundary": "The experiment machinery appears ready to be handed to an independent participant; StateGate has not demonstrated external or commercial value."
+}

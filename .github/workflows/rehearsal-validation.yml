@@ -28,6 +28,11 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Configure test-only Git identity
+        run: |
+          git config --local user.name "StateGate CI"
+          git config --local user.email "stategate-ci@users.noreply.github.com"
+
       - name: Run StateGate conformance suite
         run: node test.mjs
 

@@ -44,8 +44,16 @@ jobs:
           cd rehearsal/issue-67
           sha256sum --check SHA256SUMS
 
-      - name: Verify external-adoption evidence fixtures
-        run: node scripts/validate-external-adoption-evidence.mjs fixtures/external-adoption/*.json
+      - name: Verify external-adoption positive fixtures
+        run: |
+          node scripts/validate-external-adoption-evidence.mjs \
+            fixtures/external-adoption/valid-placeholder.json \
+            fixtures/external-adoption/valid-installation-only.json \
+            fixtures/external-adoption/valid-repeat-use.json \
+            fixtures/external-adoption/valid-independent-dependency.json
 
       - name: Verify release artifacts
         run: node scripts/verify-release.mjs
+
+      - name: Verify whitespace
+        run: git diff --check origin/main...HEAD

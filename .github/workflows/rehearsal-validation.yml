@@ -40,3 +40,5 @@ jobs:
 
       - name: Verify release artifacts
         run: node scripts/verify-release.mjs
+
+      # Intentional no-op metadata change to force GitHub to evaluate this newly added PR workflow.

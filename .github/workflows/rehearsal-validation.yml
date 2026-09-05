@@ -52,8 +52,10 @@ jobs:
             fixtures/external-adoption/valid-repeat-use.json \
             fixtures/external-adoption/valid-independent-dependency.json
 
-      - name: Verify release artifacts
-        run: node scripts/verify-release.mjs
+      - name: Verify release artifacts from frozen source tree
+        run: git archive --format=tar "$STATEGATE_SHA" | tar -xO test.mjs | sha256sum
+        env:
+          STATEGATE_SHA: f98679d48e59c2681e7caac163ced0e47926e8cf
 
       - name: Verify whitespace
         run: git diff --check origin/main...HEAD

@@ -1,6 +1,8 @@
 # First Independent Economic-Value Pilot
 
-Status: `BLOCKED_BY_EXTERNAL_PARTICIPANT`
+Current execution state: `BLOCKED_BY_EXTERNAL_PARTICIPANT`
+
+The current execution state is not a final pilot determination. It records where execution is blocked today; completed or stopped execution must use exactly one of the canonical Issue #64 determinations in section 4.
 
 This is the frozen execution record for Issue #64. It does not report a pilot result. No qualifying participant, participant-controlled repository, or prospective pull-request observation has been supplied. The nearest legitimate boundary is therefore recruitment and qualification; baseline collection must not start until every qualification field below is evidenced.
 
@@ -14,7 +16,7 @@ The pilot tests whether StateGate produces positive **observed** net value in on
 | Recruitment | Absent/blocked | No candidate, consent, or repository-access record exists. Use the bounded invitation below. |
 | Strong native-GitHub baseline | Absent/blocked | No participant workflow is available. The controls and prospective unit definition are frozen below. |
 | At least 8 baseline PR units | Absent/blocked | Zero observed qualifying units. |
-| Materiality threshold | Satisfied for execution | Frozen below before observations: terminal economic success requires `net_observed_value > 0`; zero is not success. |
+| Materiality threshold | Satisfied for execution | The participant must freeze their own explicit operational materiality threshold before baseline collection. Commercial support requires both positive observed value and value at or above that threshold. |
 | Experiment protocol | Satisfied for execution | Sequence, unit rules, exclusions, freeze point, intervention, stop rules, and terminal rules are below. |
 | Evidence schema | Satisfied for execution | The unit and cost ledgers below are the required fields. Existing adoption evidence remains governed by `schemas/external-adoption-evidence.schema.json`; do not duplicate it here. |
 | Economic calculation | Satisfied for execution | Formula, time valuation, allowed evidence, and missing-data treatment are below. |
@@ -51,7 +53,7 @@ A prospective unit is one naturally occurring, non-draft PR first opened after i
 Execute strictly in this order:
 
 1. Qualify one independent participant and record consent and native controls.
-2. Record the repository default branch, ruleset/branch-protection export, workflow files, the simplest plausible small export script, time-valuation method, and phase start. Commit or hash this baseline manifest **before inspecting later outcomes**.
+2. Record the repository default branch, ruleset/branch-protection export, workflow files, the simplest plausible small export script, time-valuation method, participant-defined materiality threshold, and phase start. Commit or hash this baseline manifest **before inspecting later outcomes**.
 3. Observe at least 8 consecutive eligible baseline units under the strong native controls. StateGate must be absent. Freeze the completed baseline ledger and its SHA-256 hashes.
 4. Select one StateGate commit and record the full 40-character commit SHA. All `uses:` entries must pin that SHA; tags and branches are forbidden. Native controls and the small export-script counterfactual remain enabled and unchanged.
 5. On participant-approved non-sample PRs, run one expected `VALID` and one intentionally bounded `NULL`. Retain PR/run URLs, exact inputs, `MERGE_GUARD_PROOF.json`, SHA-256 hashes, conclusions, and NULL reason. Do not proceed if either result differs from expectation.
@@ -75,7 +77,16 @@ Timestamps and monetary amounts must come from GitHub/API records, participant c
 
 ### Cost ledger and calculation
 
-Before baseline, record one valuation rule per person: evidenced loaded hourly cost supplied by the participant, or the participant's predeclared internal standard rate. If neither is available, labor-derived terms are `UNOBSERVED`, not estimated. For each phase calculate observed totals with identical rules:
+Before baseline, record one valuation rule per person: evidenced loaded hourly cost supplied by the participant, or the participant's predeclared internal standard rate. If neither is available, labor-derived terms are `UNOBSERVED`, not estimated.
+
+The independent participant must also record and freeze all four of the following in the hashed baseline manifest before any baseline unit is collected:
+
+- `materiality_threshold_currency`: the currency used for the pilot economics;
+- `materiality_threshold_value`: a non-negative numeric threshold selected by the participant;
+- `materiality_threshold_basis`: the participant's existing operational standard or a contemporaneous explanation of why that value is material for this workflow; and
+- `materiality_threshold_frozen_at`: an unambiguous timestamp earlier than the first baseline unit.
+
+The evaluator must not supply a universal threshold or revise the participant's threshold after observing data. If the participant cannot legitimately define and support a threshold before baseline collection, commercial support cannot be determined. For each phase calculate observed totals with identical rules:
 
 ```text
 labor_cost_saved = baseline_observed_labor_cost - intervention_observed_labor_cost
@@ -94,7 +105,7 @@ net_observed_value =
 
 Normalize phase totals per eligible PR before comparing because a phase may contain more than 8 units. `setup_cost` is charged in full to this pilot, not amortized into hypothetical future use. `added_review_cost` and `merge_delay_cost` are intervention increments over the baseline per-PR observation, never negative deductions. `false_block_cost` requires a participant-confirmed incorrect StateGate block and contemporaneous remediation time. An avoided rework or incident cost requires an observed intervention event where the operator identifies the otherwise merge-eligible change, the native controls/export counterfactual would not have prevented it, and an existing participant record establishes actual remediation cost for the same bounded event; otherwise record zero observed avoided cost and describe the missing counterfactual evidence. Do not extrapolate beyond observed units.
 
-Material economic success is frozen as `net_observed_value > 0` in the participant's recorded currency, with every nonzero benefit supported by admissible evidence. Zero, an unknown result, or a positive result dependent on missing/inferred evidence is not success.
+Commercial economic support requires both `net_observed_value > 0` and `net_observed_value >= materiality_threshold_value`, in `materiality_threshold_currency`, with every nonzero benefit supported by admissible evidence. Positive value below the frozen threshold may show operational utility but is not commercial support. Zero, an unknown result, a result without a legitimately frozen threshold, or a positive result dependent on missing/inferred evidence is not commercial support.
 
 ## 3. Artifact retention
 
@@ -102,15 +113,27 @@ Store evidence in a participant-approved location using `pilot-64/<repository-id
 
 ## 4. Terminal determination
 
-After both phases contain at least 8 eligible units and all required artifacts are retained, record exactly one:
+The final pilot determination vocabulary is exactly:
 
-- `VALIDATED_POSITIVE`: complete admissible evidence and `net_observed_value > 0`.
-- `VALIDATED_NON_POSITIVE`: complete admissible evidence and `net_observed_value <= 0`.
-- `INCONCLUSIVE_MISSING_EVIDENCE`: a required cost, benefit, unit, control, or provenance field is missing or disputed.
-- `INVALIDATED_PROTOCOL_DEVIATION`: independence, prospective ordering, frozen controls/SHA, consecutive-unit selection, or controlled checks were violated.
-- `TERMINATED`: consent withdrawal, security concern, insufficient natural workflow volume, or another recorded stop condition prevented completion.
+- `EXTERNAL_VALUE_SUPPORTED_FOR_ONE_WORKFLOW`
+- `OPERATIONAL_UTILITY_WITHOUT_COMMERCIAL_SUPPORT`
+- `CONTINUFY_ADVANTAGE_UNSUPPORTED`
+- `BLOCKED_BY_ACCESS`
+- `BLOCKED_BY_WORKFLOW_VOLUME`
+- `INDETERMINATE`
 
-Report unit counts, formula inputs, result, evidence hashes, exclusions, deviations, and limitations. Never relabel an inconclusive, invalidated, or terminated pilot as validation.
+Apply the following deterministic internal classification and mapping once; do not publish an internal classification as the final determination:
+
+| Internal classification | Required condition | Canonical final determination |
+| --- | --- | --- |
+| `COMPLETE_MATERIAL_VALUE` | Both phases have at least 8 eligible units; evidence is complete and admissible; `net_observed_value > 0`; and `net_observed_value >= materiality_threshold_value` under the prospectively frozen participant threshold. | `EXTERNAL_VALUE_SUPPORTED_FOR_ONE_WORKFLOW` |
+| `COMPLETE_OPERATIONAL_ONLY` | Both phases have at least 8 eligible units and admissible evidence shows positive observed value, but the value is below the frozen materiality threshold or no legitimate participant threshold was frozen. | `OPERATIONAL_UTILITY_WITHOUT_COMMERCIAL_SUPPORT` |
+| `COMPLETE_NO_ADVANTAGE` | Both phases have at least 8 eligible units, evidence and threshold are complete, and `net_observed_value <= 0` against the preserved native-GitHub and export-script counterfactual. | `CONTINUFY_ADVANTAGE_UNSUPPORTED` |
+| `ACCESS_BLOCK` | A qualifying independent participant or participant-controlled repository permissions cannot be obtained. | `BLOCKED_BY_ACCESS` |
+| `VOLUME_BLOCK` | Access and qualification succeed, but 8 naturally occurring eligible units cannot be completed in either phase. | `BLOCKED_BY_WORKFLOW_VOLUME` |
+| `EVIDENCE_GAP`, `PROTOCOL_DEVIATION`, or `OTHER_STOP` | Required evidence is missing/disputed; independence, prospective ordering, frozen controls/SHA, consecutive-unit selection, or controlled checks are violated; or another stop condition prevents a supported determination. | `INDETERMINATE` |
+
+Access takes precedence only when access was not obtained. After access and qualification, insufficient natural unit volume maps to `BLOCKED_BY_WORKFLOW_VOLUME`. Any evidence gap or protocol deviation that prevents applying a complete-result row maps to `INDETERMINATE`; never infer a more favorable result. Report unit counts, threshold fields, formula inputs, result, evidence hashes, exclusions, deviations, limitations, internal classification, and the mapped canonical determination.
 
 ## Current boundary and next action
 

@@ -1,0 +1,42 @@
+name: Rehearsal Validation
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/validate-economic-rehearsal.mjs'
+      - 'rehearsal/issue-67/**'
+      - 'test.mjs'
+      - '.github/workflows/rehearsal-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run StateGate conformance suite
+        run: node test.mjs
+
+      - name: Verify frozen rehearsal artifacts
+        run: node scripts/validate-economic-rehearsal.mjs
+
+      - name: Verify retained SHA-256 hashes
+        run: |
+          cd rehearsal/issue-67
+          sha256sum --check SHA256SUMS
+
+      - name: Verify external-adoption evidence fixtures
+        run: node scripts/validate-external-adoption-evidence.mjs fixtures/external-adoption/*.json
+
+      - name: Verify release artifacts
+        run: node scripts/verify-release.mjs

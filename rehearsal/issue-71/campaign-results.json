@@ -1,0 +1,533 @@
+{
+  "record_type": "CONTROLLED_VALIDATION_CAMPAIGN_RESULT",
+  "issue": 71,
+  "parent_issue": 70,
+  "evidence_class": "INTERNAL_CONTROLLED_VALIDATION",
+  "independent_participant": false,
+  "issue_64_admissible": false,
+  "manifest_sha256": "ca52a778eb414c888170ad13ff0744df842f088c8ce39ed511ae1958f69ec875",
+  "starting_repository_identity": {
+    "commit_sha": "b853fb8b3105e8241868fcc3d17ed4ad55fa10f5",
+    "tree_sha": "1cd11ce5150274717bb1053e0ef773527c3cb9c7"
+  },
+  "campaign_execution_base_commit": "3bc2a36cd674f871b55cb16ca5a359b3e36d5c48",
+  "canonical_runtime_files": [
+    "guard.mjs",
+    "canonical.mjs",
+    "attribution.mjs"
+  ],
+  "control": {
+    "determination": "ELIGIBLE",
+    "canonical_hash": "65ed34a507f73a69b8afd71e2a00078030edefc61c7e8fd339c17ac919334fed",
+    "proof_sha256": "3dfde99109ac9bd7b3fd5e69470584a83ac1cbae71a75d6c89f0243e3244c35b"
+  },
+  "results": [
+    {
+      "id": "KAT-01",
+      "kind": "deterministic",
+      "execution_status": "EXECUTED",
+      "expected_determination": "ELIGIBLE",
+      "actual_determination": "ELIGIBLE",
+      "expected_failing_predicate": null,
+      "actual_failing_predicate": null,
+      "boundary_reasons": [],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": true,
+      "execution_error": null,
+      "ambiguous_outcome": false,
+      "canonical_hash": "65ed34a507f73a69b8afd71e2a00078030edefc61c7e8fd339c17ac919334fed",
+      "proof_sha256": "3dfde99109ac9bd7b3fd5e69470584a83ac1cbae71a75d6c89f0243e3244c35b"
+    },
+    {
+      "id": "KAT-02",
+      "kind": "deterministic",
+      "execution_status": "REPRESENTATIONAL_GAP",
+      "expected_determination": "NULL",
+      "actual_determination": "UNREPRESENTABLE",
+      "expected_failing_predicate": "AUTHORIZED",
+      "actual_failing_predicate": null,
+      "boundary_reasons": [],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": null,
+      "execution_error": null,
+      "ambiguous_outcome": true,
+      "note": "The canonical input and decision have no field or state model for this predicate; no synthetic pass/fail was manufactured."
+    },
+    {
+      "id": "KAT-03",
+      "kind": "deterministic",
+      "execution_status": "REPRESENTATIONAL_GAP",
+      "expected_determination": "NULL",
+      "actual_determination": "UNREPRESENTABLE",
+      "expected_failing_predicate": "AUTHORIZED",
+      "actual_failing_predicate": null,
+      "boundary_reasons": [],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": null,
+      "execution_error": null,
+      "ambiguous_outcome": true,
+      "note": "The canonical input and decision have no field or state model for this predicate; no synthetic pass/fail was manufactured."
+    },
+    {
+      "id": "KAT-04",
+      "kind": "deterministic",
+      "execution_status": "REPRESENTATIONAL_GAP",
+      "expected_determination": "NULL",
+      "actual_determination": "UNREPRESENTABLE",
+      "expected_failing_predicate": "UNUSED",
+      "actual_failing_predicate": null,
+      "boundary_reasons": [],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": null,
+      "execution_error": null,
+      "ambiguous_outcome": true,
+      "note": "The canonical input and decision have no field or state model for this predicate; no synthetic pass/fail was manufactured."
+    },
+    {
+      "id": "KAT-05",
+      "kind": "deterministic",
+      "execution_status": "EXECUTED",
+      "expected_determination": "NULL",
+      "actual_determination": "NULL",
+      "expected_failing_predicate": "REPLAY_SAFE",
+      "actual_failing_predicate": "REPLAY_SAFE",
+      "boundary_reasons": [
+        "DIFF_HASH_MISMATCH",
+        "PROOF_HASH_MISMATCH"
+      ],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": true,
+      "execution_error": null,
+      "ambiguous_outcome": false,
+      "canonical_hash": "4e3f681cad11c8a9a70957db004142a9faf15f7f968b5fc1a42ba5a30ea54155",
+      "proof_sha256": "fcd86d9091d4a52c5211b8ac51898c27c06c4761f3880b4b82e282dc3ebfc2c6"
+    },
+    {
+      "id": "KAT-06",
+      "kind": "deterministic",
+      "execution_status": "REPRESENTATIONAL_GAP",
+      "expected_determination": "NULL",
+      "actual_determination": "UNREPRESENTABLE",
+      "expected_failing_predicate": "UNUSED",
+      "actual_failing_predicate": null,
+      "boundary_reasons": [],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": null,
+      "execution_error": null,
+      "ambiguous_outcome": true,
+      "note": "The canonical input and decision have no field or state model for this predicate; no synthetic pass/fail was manufactured."
+    },
+    {
+      "id": "KAT-07",
+      "kind": "deterministic",
+      "execution_status": "EXECUTED",
+      "expected_determination": "NULL",
+      "actual_determination": "NULL",
+      "expected_failing_predicate": "POLICY_VALID",
+      "actual_failing_predicate": "POLICY_VALID",
+      "boundary_reasons": [
+        "INVALID_POLICY_FIELD"
+      ],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": true,
+      "execution_error": null,
+      "ambiguous_outcome": false,
+      "canonical_hash": "9e735366db8d241ee0ba40c18faa3c77c10b60bebfda9e568381c22313efff46",
+      "proof_sha256": "a3ac2bec90d4f5c4615a980856a7254c9116b444836e8b262d3d335d8fa7334d"
+    },
+    {
+      "id": "KAT-08",
+      "kind": "deterministic",
+      "execution_status": "EXECUTED",
+      "expected_determination": "NULL",
+      "actual_determination": "NULL",
+      "expected_failing_predicate": "TOPOLOGY_VISIBLE",
+      "actual_failing_predicate": "TOPOLOGY_VISIBLE",
+      "boundary_reasons": [
+        "HEAD_SHA_MISMATCH"
+      ],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": true,
+      "execution_error": null,
+      "ambiguous_outcome": false,
+      "canonical_hash": "65ed34a507f73a69b8afd71e2a00078030edefc61c7e8fd339c17ac919334fed",
+      "proof_sha256": "e26f7442af8a25f43f84521f684251c56ac4860a77ffcc98cb4e53215e650e7f"
+    },
+    {
+      "id": "KAT-09",
+      "kind": "deterministic",
+      "execution_status": "REPRESENTATIONAL_GAP",
+      "expected_determination": "NULL",
+      "actual_determination": "UNREPRESENTABLE",
+      "expected_failing_predicate": "REPLAY_SAFE",
+      "actual_failing_predicate": null,
+      "boundary_reasons": [],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": null,
+      "execution_error": null,
+      "ambiguous_outcome": true,
+      "note": "The canonical input and decision have no field or state model for this predicate; no synthetic pass/fail was manufactured."
+    },
+    {
+      "id": "KAT-10",
+      "kind": "deterministic",
+      "execution_status": "EXECUTED",
+      "expected_determination": "NULL",
+      "actual_determination": "NULL",
+      "expected_failing_predicate": "REPLAY_SAFE",
+      "actual_failing_predicate": "REPLAY_SAFE",
+      "boundary_reasons": [
+        "VALIDATED_OBJECT_MUTATION"
+      ],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": true,
+      "execution_error": null,
+      "ambiguous_outcome": false,
+      "canonical_hash": "41bdaf142c7c9df408238d7e57c379f5dd341971f843cdc2d8535cd62cb4dd3f",
+      "proof_sha256": "efcc163b32a76f0147367b81d776c7cbcd35fc1b1cf92e2b39cb7997913b1776"
+    },
+    {
+      "id": "KAT-11",
+      "kind": "deterministic",
+      "execution_status": "REPRESENTATIONAL_GAP",
+      "expected_determination": "NULL",
+      "actual_determination": "UNREPRESENTABLE",
+      "expected_failing_predicate": "RECONCILABLE",
+      "actual_failing_predicate": null,
+      "boundary_reasons": [],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": null,
+      "execution_error": null,
+      "ambiguous_outcome": true,
+      "note": "The canonical input and decision have no field or state model for this predicate; no synthetic pass/fail was manufactured."
+    },
+    {
+      "id": "KAT-12",
+      "kind": "deterministic",
+      "execution_status": "EXECUTED",
+      "expected_determination": "NULL",
+      "actual_determination": "NULL",
+      "expected_failing_predicate": "POLICY_VALID",
+      "actual_failing_predicate": "POLICY_VALID",
+      "boundary_reasons": [
+        "REVIEW_HEAD_SHA_MISMATCH"
+      ],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": true,
+      "execution_error": null,
+      "ambiguous_outcome": false,
+      "canonical_hash": "3a6cc4c22f3fbb49e19defa373533eed1b57c18c7a2df713054c010b7e12d9df",
+      "proof_sha256": "d674fdd50fe3c5946e88433a10df11143a6ac0ca48b3e2f144723fdb466e6f1c"
+    },
+    {
+      "id": "KAT-13",
+      "kind": "deterministic",
+      "execution_status": "REPRESENTATIONAL_GAP",
+      "expected_determination": "NULL",
+      "actual_determination": "UNREPRESENTABLE",
+      "expected_failing_predicate": "RECONCILABLE",
+      "actual_failing_predicate": null,
+      "boundary_reasons": [],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": null,
+      "execution_error": null,
+      "ambiguous_outcome": true,
+      "note": "The canonical input and decision have no field or state model for this predicate; no synthetic pass/fail was manufactured."
+    },
+    {
+      "id": "ADV-01",
+      "kind": "adversarial",
+      "execution_status": "EXECUTED",
+      "expected_determination": "NULL",
+      "actual_determination": "NULL",
+      "expected_failing_predicate": "POLICY_VALID",
+      "actual_failing_predicate": "POLICY_VALID",
+      "boundary_reasons": [
+        "REVIEW_STALE"
+      ],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": true,
+      "execution_error": null,
+      "ambiguous_outcome": false,
+      "canonical_hash": "2452488c4fb0803305dbf5cdbb4ed5ff6fda0ec483df7ee3e2d19a8a78037412",
+      "proof_sha256": "091234a5e3930cb57900023330994edd8a19d9c2d3fc83edfe1e3019339a017e"
+    },
+    {
+      "id": "ADV-02",
+      "kind": "adversarial",
+      "execution_status": "REPRESENTATIONAL_GAP",
+      "expected_determination": "NULL",
+      "actual_determination": "UNREPRESENTABLE",
+      "expected_failing_predicate": "UNUSED",
+      "actual_failing_predicate": null,
+      "boundary_reasons": [],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": null,
+      "execution_error": null,
+      "ambiguous_outcome": true,
+      "note": "The canonical input and decision have no field or state model for this predicate; no synthetic pass/fail was manufactured."
+    },
+    {
+      "id": "ADV-03",
+      "kind": "adversarial",
+      "execution_status": "EXECUTED",
+      "expected_determination": "NULL",
+      "actual_determination": "NULL",
+      "expected_failing_predicate": "POLICY_VALID",
+      "actual_failing_predicate": "POLICY_VALID",
+      "boundary_reasons": [
+        "INSUFFICIENT_APPROVALS"
+      ],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": true,
+      "execution_error": null,
+      "ambiguous_outcome": false,
+      "canonical_hash": "6b08b5290b4167e8d201c01b23c169c61917621763a83949bdf3efdde0135d47",
+      "proof_sha256": "433ce29d33b898a6888be351b397ac8b3f7c96719893378fea4149c36edb74d9"
+    },
+    {
+      "id": "ADV-04",
+      "kind": "adversarial",
+      "execution_status": "EXECUTED",
+      "expected_determination": "NULL",
+      "actual_determination": "NULL",
+      "expected_failing_predicate": "REPLAY_SAFE",
+      "actual_failing_predicate": "REPLAY_SAFE",
+      "boundary_reasons": [
+        "DIFF_HASH_MISMATCH",
+        "PROOF_HASH_MISMATCH"
+      ],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": true,
+      "execution_error": null,
+      "ambiguous_outcome": false,
+      "canonical_hash": "4e3f681cad11c8a9a70957db004142a9faf15f7f968b5fc1a42ba5a30ea54155",
+      "proof_sha256": "fcd86d9091d4a52c5211b8ac51898c27c06c4761f3880b4b82e282dc3ebfc2c6"
+    },
+    {
+      "id": "ADV-05",
+      "kind": "adversarial",
+      "execution_status": "REPRESENTATIONAL_GAP",
+      "expected_determination": "NULL",
+      "actual_determination": "UNREPRESENTABLE",
+      "expected_failing_predicate": "AUTHORIZED",
+      "actual_failing_predicate": null,
+      "boundary_reasons": [],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": null,
+      "execution_error": null,
+      "ambiguous_outcome": true,
+      "note": "The canonical input and decision have no field or state model for this predicate; no synthetic pass/fail was manufactured."
+    },
+    {
+      "id": "ADV-06",
+      "kind": "adversarial",
+      "execution_status": "EXECUTED",
+      "expected_determination": "NULL",
+      "actual_determination": "NULL",
+      "expected_failing_predicate": "AUTHORIZED",
+      "actual_failing_predicate": "AUTHORIZED",
+      "boundary_reasons": [
+        "ATTRIBUTION_AMBIGUOUS"
+      ],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": true,
+      "execution_error": null,
+      "ambiguous_outcome": false,
+      "canonical_hash": "9231a5c75e7489c3385190d3091ed9ad02f9c35fd3a1682f9c76ca6f98dc4a4e",
+      "proof_sha256": "5a2e2b0d83d61829801c20ef1174308e1f9b665be077f8062ec03d49ad880c94"
+    },
+    {
+      "id": "ADV-07",
+      "kind": "adversarial",
+      "execution_status": "EXECUTED",
+      "expected_determination": "NULL",
+      "actual_determination": "NULL",
+      "expected_failing_predicate": "TOPOLOGY_VISIBLE",
+      "actual_failing_predicate": "TOPOLOGY_VISIBLE",
+      "boundary_reasons": [
+        "VALIDATED_OBJECT_MUTATION"
+      ],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": true,
+      "execution_error": null,
+      "ambiguous_outcome": false,
+      "canonical_hash": "c040cadc32a14b59e45823d24e0e82e5562bcc551d350d5ed1e9162567b83abd",
+      "proof_sha256": "6ce43c6c1107dcaec31e303d3cf9dfda1a6c6801bf0179f384c52df04370e1ee"
+    },
+    {
+      "id": "ADV-08",
+      "kind": "adversarial",
+      "execution_status": "REPRESENTATIONAL_GAP",
+      "expected_determination": "NULL",
+      "actual_determination": "UNREPRESENTABLE",
+      "expected_failing_predicate": "UNUSED",
+      "actual_failing_predicate": null,
+      "boundary_reasons": [],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": null,
+      "execution_error": null,
+      "ambiguous_outcome": true,
+      "note": "The canonical input and decision have no field or state model for this predicate; no synthetic pass/fail was manufactured."
+    },
+    {
+      "id": "ADV-09",
+      "kind": "adversarial",
+      "execution_status": "EXECUTED",
+      "expected_determination": "NULL",
+      "actual_determination": "NULL",
+      "expected_failing_predicate": "POLICY_VALID",
+      "actual_failing_predicate": "POLICY_VALID",
+      "boundary_reasons": [
+        "REVIEW_EVIDENCE_HASH_MISMATCH"
+      ],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": true,
+      "execution_error": null,
+      "ambiguous_outcome": false,
+      "canonical_hash": "1b88cf9b50ac18e9297c767589dc9bcc1ed6ca12ceabf98adba2454124436ea8",
+      "proof_sha256": "0dd7a99bcdd1256b8ae813f1779ffb03d75a4b021a2a25878237e54aea194c49"
+    },
+    {
+      "id": "ADV-10",
+      "kind": "adversarial",
+      "execution_status": "EXECUTED",
+      "expected_determination": "NULL",
+      "actual_determination": "NULL",
+      "expected_failing_predicate": "TOPOLOGY_VISIBLE",
+      "actual_failing_predicate": "TOPOLOGY_VISIBLE",
+      "boundary_reasons": [
+        "BASE_SHA_MISMATCH"
+      ],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": true,
+      "execution_error": null,
+      "ambiguous_outcome": false,
+      "canonical_hash": "65ed34a507f73a69b8afd71e2a00078030edefc61c7e8fd339c17ac919334fed",
+      "proof_sha256": "c0f7fc452e42430a414f66f294f94c3aebc7304cf1ff87ddfd24193b007ccbac"
+    },
+    {
+      "id": "ADV-11",
+      "kind": "adversarial",
+      "execution_status": "REPRESENTATIONAL_GAP",
+      "expected_determination": "NULL",
+      "actual_determination": "UNREPRESENTABLE",
+      "expected_failing_predicate": "RECONCILABLE",
+      "actual_failing_predicate": null,
+      "boundary_reasons": [],
+      "false_accept": false,
+      "false_reject": false,
+      "expectation_match": null,
+      "execution_error": null,
+      "ambiguous_outcome": true,
+      "note": "The canonical input and decision have no field or state model for this predicate; no synthetic pass/fail was manufactured."
+    }
+  ],
+  "measurements": {
+    "scenarios_frozen": 24,
+    "scenarios_executed": 13,
+    "scenario_passes": 13,
+    "scenario_failures": 0,
+    "representational_gaps": 11,
+    "false_accepts": 0,
+    "false_rejects": 0,
+    "unexplained_failures": 0,
+    "execution_errors": 0,
+    "ambiguous_outcomes": 11
+  },
+  "reproducibility": {
+    "complete_suite_runs": 2,
+    "deterministic": true,
+    "byte_equivalent_normalized_results": true
+  },
+  "pre_fix_observations": {
+    "preserved": true,
+    "failing_scenarios": [],
+    "note": "No corrective runtime change was made; all representable frozen scenarios matched on the first run."
+  },
+  "defects_discovered": [],
+  "corrective_changes": [],
+  "representational_gaps": [
+    {
+      "id": "KAT-02",
+      "predicate": "AUTHORIZED",
+      "input_class": "authorization absent"
+    },
+    {
+      "id": "KAT-03",
+      "predicate": "AUTHORIZED",
+      "input_class": "expired authorization object"
+    },
+    {
+      "id": "KAT-04",
+      "predicate": "UNUSED",
+      "input_class": "previously consumed authorization object"
+    },
+    {
+      "id": "KAT-06",
+      "predicate": "UNUSED",
+      "input_class": "duplicate execution ledger entry"
+    },
+    {
+      "id": "KAT-09",
+      "predicate": "REPLAY_SAFE",
+      "input_class": "proof artifact absent after decision"
+    },
+    {
+      "id": "KAT-11",
+      "predicate": "RECONCILABLE",
+      "input_class": "incomplete terminal reconciliation history"
+    },
+    {
+      "id": "KAT-13",
+      "predicate": "RECONCILABLE",
+      "input_class": "state transitions reordered"
+    },
+    {
+      "id": "ADV-02",
+      "predicate": "UNUSED",
+      "input_class": "valid-looking reused authorization object"
+    },
+    {
+      "id": "ADV-05",
+      "predicate": "AUTHORIZED",
+      "input_class": "valid authority attached to wrong object scope"
+    },
+    {
+      "id": "ADV-08",
+      "predicate": "UNUSED",
+      "input_class": "duplicate artifacts presented as independent evidence"
+    },
+    {
+      "id": "ADV-11",
+      "predicate": "RECONCILABLE",
+      "input_class": "plausible but incomplete reconciliation history"
+    }
+  ],
+  "acceptance_assessment": "Inconclusive: representable predicates behaved deterministically with predicate-level attribution, but existing semantics cannot represent all Issue #71 predicates and scenarios.",
+  "terminal_determination": "CONTROLLED_VALIDATION_INCONCLUSIVE",
+  "final_repository_identity": "The Git commit containing this report is the final self-identifying repository state; report its commit and tree SHA after commit creation."
+}

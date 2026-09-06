@@ -4,7 +4,9 @@ on:
   pull_request:
     paths:
       - 'scripts/validate-economic-rehearsal.mjs'
+      - 'scripts/run-controlled-validation.mjs'
       - 'rehearsal/issue-67/**'
+      - 'rehearsal/issue-71/**'
       - 'test.mjs'
       - '.github/workflows/rehearsal-validation.yml'
   workflow_dispatch:
@@ -43,6 +45,9 @@ jobs:
         run: |
           cd rehearsal/issue-67
           sha256sum --check SHA256SUMS
+
+      - name: Replay Issue 71 controlled validation
+        run: node scripts/run-controlled-validation.mjs
 
       - name: Verify external-adoption positive fixtures
         run: |

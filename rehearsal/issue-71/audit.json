@@ -1,0 +1,45 @@
+{
+  "audit_version": 1,
+  "issue": 71,
+  "parent_issue": 70,
+  "audit_date": "2026-09-06",
+  "starting_commit_sha": "b853fb8b3105e8241868fcc3d17ed4ad55fa10f5",
+  "starting_tree_sha": "1cd11ce5150274717bb1053e0ef773527c3cb9c7",
+  "starting_branch": "work",
+  "worktree_at_start": "clean",
+  "main_ref_observation": "No local or remote main ref and no git remote were present in the supplied checkout; HEAD was inspected as the only available repository state.",
+  "issue_source_observation": "The full Issue #71 and parent Issue #70 specification supplied in the task was audited. Direct GitHub retrieval was also attempted but was unavailable: the web endpoint returned HTTP 401, the GitHub CLI had no authentication, and the public API proxy returned HTTP 403.",
+  "canonical_execution_path": "validateMergeGuard(input) in guard.mjs; evaluate is a compatibility alias; check.mjs is the runtime adapter; proofFromDecision projects the decision.",
+  "mutation_capable_surfaces": [
+    "check.mjs writes MERGE_GUARD_PROOF.json and GitHub outputs and sets process exit status",
+    "action.yml uploads the proof artifact",
+    "the Issue #71 campaign writer writes only rehearsal/issue-71 evidence"
+  ],
+  "implementation_inventory": {
+    "validation": ["guard.mjs:validateMergeGuard", "canonical.mjs:diffHash", "attribution.mjs:classifyAttribution"],
+    "authority": ["guard.mjs agent-author policy", "guard.mjs review-policy evidence", "attribution.mjs identity classification"],
+    "execution_eligibility": ["guard.mjs VALID/NULL decision; VALID is eligibility only, not merge authority"],
+    "replay_protection": ["expected_diff_hash", "expected_proof_hash", "expected_validated_object_hash", "expected_review_evidence_hash"],
+    "policy_validation": ["author_kind", "require_agent_authored", "require_review_approval", "minimum_approvals"],
+    "topology_visibility": ["repo", "head_sha/evaluated_head_sha", "base_sha/evaluated_base_sha", "diff_source and diff acquisition"],
+    "proof": ["guard.mjs:proofFromDecision", "check.mjs proof writer", "release validator identity"],
+    "reconciliation": ["No terminal-state history or reconciliation model exists in the canonical input or decision"]
+  },
+  "existing_validation_assets": {
+    "tests": ["test.mjs"],
+    "fixtures": ["fixtures/*.json", "fixtures/external-adoption/*.json"],
+    "validators": ["scripts/verify-release.mjs", "scripts/validate-economic-rehearsal.mjs", "scripts/validate-external-adoption-evidence.mjs"],
+    "schemas": ["schemas/external-adoption-evidence.schema.json"],
+    "evidence_formats": ["MERGE_GUARD_PROOF.json", "rehearsal/issue-67/*.json", "SHA256SUMS"],
+    "ci": [".github/workflows/rehearsal-validation.yml"]
+  },
+  "existing_coverage": [
+    "valid canonical object", "missing or malformed diff", "invalid author policy", "agent-author requirement", "ambiguous attribution", "head/base mismatch", "stale review", "review conflict and insufficiency", "diff/proof/validated-object/review-evidence replay mismatch", "deterministic replay", "proof projection exactness"
+  ],
+  "genuinely_missing_or_unrepresentable": [
+    "authorization object validity, expiry, scope, consumption, or reuse", "execution ledger duplicate detection", "event-order validation", "terminal-state reconciliation history", "policy/topology freshness timestamps", "proof-presence validation after decision projection"
+  ],
+  "preserved_invariants": [
+    "validated_object == executed_object", "proof is projected from the canonical decision", "incomplete evidence fails closed where represented", "VALID does not grant merge authority", "Issue #64 external evidence status is unchanged"
+  ]
+}

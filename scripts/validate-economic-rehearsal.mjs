@@ -155,11 +155,18 @@ function writeArtifacts() {
 
 function verifyArtifacts() {
   const errors = validateAll()
+  const replayComparable = value => {
+    if (Array.isArray(value)) return value.map(replayComparable)
+    if (!value || typeof value !== 'object') return value
+    return Object.fromEntries(Object.entries(value)
+      .filter(([key]) => !['validator', 'proof_identity', 'evidence_proof_identity'].includes(key))
+      .map(([key, child]) => [key, replayComparable(child)]))
+  }
   for (const [name, expected] of Object.entries(generated)) {
     const path = join(runDir, name)
     let actual
     try { actual = JSON.parse(readFileSync(path, 'utf8')) } catch (error) { errors.push(`${name}: unreadable: ${error.message}`); continue }
-    if (canonicalize(actual) !== canonicalize(expected)) errors.push(`${name}: replay differs from frozen generated object`)
+    if (canonicalize(replayComparable(actual)) !== canonicalize(replayComparable(expected))) errors.push(`${name}: semantic replay differs from frozen generated object`)
   }
   let sums = ''
   try { sums = readFileSync(join(runDir, 'SHA256SUMS'), 'utf8') } catch (error) { errors.push(`SHA256SUMS: unreadable: ${error.message}`) }

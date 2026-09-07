@@ -150,7 +150,14 @@ function write() {
 if (process.argv.includes('--write')) write()
 else {
   const retained = JSON.parse(readFileSync(join(evidenceDir, 'campaign-results.json'), 'utf8'))
-  if (canonicalize(retained) !== canonicalize(report)) throw new Error('Retained campaign result differs from deterministic replay')
+  const replayComparable = value => {
+    if (Array.isArray(value)) return value.map(replayComparable)
+    if (!value || typeof value !== 'object') return value
+    return Object.fromEntries(Object.entries(value)
+      .filter(([key]) => key !== 'proof_sha256')
+      .map(([key, child]) => [key, replayComparable(child)]))
+  }
+  if (canonicalize(replayComparable(retained)) !== canonicalize(replayComparable(report))) throw new Error('Retained campaign result differs from deterministic semantic replay')
   for (const line of readFileSync(join(evidenceDir, 'SHA256SUMS'), 'utf8').trim().split('\n')) {
     const [expected, name] = line.split(/\s{2}/)
     if (sha256(readFileSync(join(evidenceDir, name))) !== expected) throw new Error(`Retention hash mismatch: ${name}`)

@@ -1,43 +1,56 @@
 # StateGate terminal reconciliation
 
-## Determination
+Date: 2026-09-07
 
-StateGate's bounded internal correctness/readiness threshold is satisfied. This does not establish independent adoption, external economic value, or commercial support.
+## Governing boundary
 
-## Release state
+Issue 76 is the final ownership decision for the gaps observed by Issue 71:
+zero gaps are required by the StateGate contract, eight belong to ContinuityOS,
+and two are out of scope. StateGate remains a stateless validator of a supplied
+candidate. It does not acquire authorization, execution, retention, ledger, or
+reconciliation responsibilities.
 
-`v1.1.1` remains an immutable historical release. Its archived manifest, tag, release artifact, source tree, and provenance must not be rewritten to describe later repository state.
-
-Current `main` contains post-v1.1.1 changes and is therefore development state. Current development identity must not emit `validator_version: 1.1.1` or present the historical v1.1.1 release hash as if the current bytes were that release.
-
-A future release, if justified, must be created prospectively from an exact source state with new immutable version/provenance.
-
-## Internal evidence boundary
-
-The retained controlled validation produced `CONTROLLED_VALIDATION_INCONCLUSIVE`: all 13 representable scenarios matched expected outcomes with zero observed false accepts and zero observed false rejects, while 11 scenarios exposed representational gaps.
-
-Issue #76 subsequently adjudicated those gaps: zero were required by StateGate's bounded contract; eight belong to ContinuityOS; two are out of scope. Therefore additional same-owner replay, prospective-trial, or cross-context campaigns are not prerequisites to Issue #64 merely to satisfy concepts that StateGate does not own.
-
-The economic rehearsal remains `NON_EVIDENTIARY_REHEARSAL` and contributes zero Issue #64-admissible records.
+Internal correctness is not internal proof of external value. The conformance
+suite, deterministic economic rehearsal, and the 13 representable Issue 71
+scenarios establish the bounded machinery internally. The retained 11
+unrepresentable scenarios do not create StateGate defects after the ownership
+adjudication. Manufacturing more same-owner trials would not strengthen the
+independent economic-value claim reserved to Issue 64.
 
 ## Issue dispositions
 
-- #34 — close `not planned`: release correctness and exact-SHA consumption are separate from Marketplace/distribution expansion; distribution work is deferred until external value justifies it.
-- #64 — keep open: `READY_PENDING_EXTERNAL_PARTICIPANT`; independent-participant boundary unchanged.
-- #66 — close `not planned`: additional same-owner consumer evidence duplicates bounded readiness evidence and cannot substitute for #64.
-- #70 — close `completed`: bounded internal-readiness threshold is satisfied after #76 ownership adjudication.
-- #71 — close `completed`: preserve `CONTROLLED_VALIDATION_INCONCLUSIVE`; representable behavior was deterministic and unresolved concepts were adjudicated outside StateGate.
-- #72 — close `not planned`: further historical replay would add same-owner counterfactual evidence without crossing the remaining trust boundary.
-- #73 — close `not planned`: prospective same-owner trial is no longer prerequisite to #64.
-- #74 — close `not planned`: same-owner cross-context replication is no longer prerequisite to #64.
-- #78 — close `completed`: root cause is missing post-release development-state representation, not corruption of immutable v1.1.1 provenance.
+| Issue | Disposition | Reason |
+| --- | --- | --- |
+| #34 | close `not_planned` | Exact-SHA release consumption and integrity are independently established. Marketplace visibility and distribution expansion are nonblocking optimization that must wait for external value. |
+| #64 | keep open: `READY_PENDING_EXTERNAL_PARTICIPANT` | The frozen pilot requires a qualifying independent participant and participant-controlled repository. Same-owner execution is inadmissible. |
+| #66 | close `not_planned` | Additional same-owner consumer evidence would duplicate the internal conformance, rehearsal, and controlled-validation evidence without testing independent value. |
+| #70 | close `completed` | Its legitimate internal-readiness threshold is satisfied for StateGate's bounded contract; Issue 76 supersedes the broader premise. |
+| #71 | close `completed` | Preserve `CONTROLLED_VALIDATION_INCONCLUSIVE`: every representable predicate matched deterministically, and Issue 76 assigned every remaining concept outside StateGate. |
+| #72 | close `not_planned` | Historical replay would manufacture another same-owner evidence program after the contract was narrowed. |
+| #73 | close `not_planned` | A prospective same-owner trial cannot prove external value and is no longer a prerequisite to Issue 64. |
+| #74 | close `not_planned` | Cross-context same-owner replication duplicates internal readiness evidence and cannot satisfy Issue 64's independence boundary. |
+| #78 | close `completed` | The failure was a missing post-release development state, not v1.1.1 corruption. Current main now identifies as development and its live manifest verifies its own bytes. |
 
-## Physical terminal
+## Release determination
 
-After this reconciliation change is merged and the issue dispositions above are applied, the legitimate repository terminal is:
+The archived `release/manifests/v1.1.1.json` remains unchanged and continues to
+bind the immutable release payload by content tree and aggregate hash. It is not
+rewritten to describe later commits. Post-release main now uses
+`validator_version: development`; development proofs expose no published
+release hash. `node scripts/verify-release.mjs` therefore verifies current-main
+development bytes, while published verification remains an explicit operation
+against an exact tag checkout. A future release, if external value justifies
+one, must follow the existing release checklist and must not move v1.1.1.
 
-`PHYSICAL_TERMINAL_EXTERNAL_PARTICIPANT_REQUIRED`
+## Terminal state
 
-At that point no additional StateGate engineering, simulation, replay, internal trial, replication, Marketplace expansion, or evidence-manufacturing work should be created while waiting for Issue #64.
+With the issue dispositions above applied, StateGate has no remaining internal
+correctness or release-integrity prerequisite. Issue 64 is blocked only at the
+trust boundary that repository owners and Codex cannot manufacture. The
+physical terminal determination is:
 
-The first next action outside Codex is to recruit and qualify one independent maintainer controlling a real repository that satisfies Issue #64's participant boundary.
+**PHYSICAL_TERMINAL_EXTERNAL_PARTICIPANT_REQUIRED**
+
+The first next action is for a human to recruit and qualify an independent
+participant with a participant-controlled repository under the frozen Issue 64
+protocol. Until that happens, stop StateGate engineering.

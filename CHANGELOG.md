@@ -4,7 +4,8 @@ Stable format: each release records semantic version, release date, source commi
 
 ## [Unreleased]
 
-- Mark current post-v1.1.1 repository state as development; historical v1.1.1 provenance remains immutable and unchanged.
+- Restored post-release main to the development identity so later validation
+  evidence cannot be mistaken for the immutable v1.1.1 release.
 
 ## [1.1.1] - 2026-07-12
 

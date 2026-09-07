@@ -4,7 +4,7 @@ Stable format: each release records semantic version, release date, source commi
 
 ## [Unreleased]
 
-- No unpublished changes after the v1.1.1 corrective release-candidate handoff.
+- Mark current post-v1.1.1 repository state as development; historical v1.1.1 provenance remains immutable and unchanged.
 
 ## [1.1.1] - 2026-07-12
 

@@ -4,7 +4,8 @@ Stable format: each release records semantic version, release date, source commi
 
 ## [Unreleased]
 
-- No unpublished changes after the v1.1.1 corrective release-candidate handoff.
+- Restored post-release main to the development identity so later validation
+  evidence cannot be mistaken for the immutable v1.1.1 release.
 
 ## [1.1.1] - 2026-07-12
 

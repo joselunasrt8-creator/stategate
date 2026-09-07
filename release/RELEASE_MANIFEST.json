@@ -1,8 +1,8 @@
 {
   "manifest_version": "1.0.0",
-  "release": "v1.1.1",
-  "source_tree": "9f45aed34e30597d8842c9cd9eba21854ab3fe62",
-  "release_hash": "sha256:2f660e02b8774949343a628665835d347bb0b9ac9165b4eb8bcf7d168f863fc5",
+  "release": "development",
+  "source_tree": "7f8dd3967d071f11c2e5f5e563ca41b3df4bbd72",
+  "release_hash": "sha256:1074358162ab7d675612cfa3e16a7c272a567bec4c29461140263463ea5dd278",
   "files": [
     {
       "path": "action.yml",
@@ -166,11 +166,11 @@
     },
     {
       "path": "release/validator-metadata.json",
-      "sha256": "73e6a7bf70799ea25285b0b1e54e7c21e14cb0bdeb50b114c0b1f8f8bd2746bb"
+      "sha256": "4f552a19fbd23d8045c3cea9d0527c983acd12a6878b575d0d60f6779dcb85c9"
     },
     {
       "path": "test.mjs",
-      "sha256": "36fd7169042386270d537efa7570c661c3bf8021ea25f8c09d475af21d46cc55"
+      "sha256": "b36851068c42be4b168126ce12236aa33ca9f2c7628bd811f71453313c9a5989"
     }
   ]
 }
